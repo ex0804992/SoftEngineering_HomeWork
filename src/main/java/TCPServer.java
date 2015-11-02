@@ -12,23 +12,20 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 
-public class TCPServer implements Runnable{
+public class TCPServer{
 
     private static ScheduledExecutorService fScheduler = null;
     private static final int NUM_THREADS = 4;
+    private ArrayList<ClientService> memberList = null;
+    private List<String> serverMsgList = null;
     private ServerSocket serverSocket;
     private int serverPort = 0;
     private boolean serverOn = false;
-
     private int totalClient = 0;
-    private ArrayList<ClientService> memberList = null;
-    //private LinkedList<String> serverMsgQueue = null;
-    List<String> serverMsgList = null;
 
     public TCPServer(int serverPort){
         this.serverPort = serverPort;
         memberList = new ArrayList<ClientService>();
-        //serverMsgQueue = new LinkedList<String>();
         serverMsgList = Collections.synchronizedList(new LinkedList<String>());
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
     }
@@ -40,7 +37,6 @@ public class TCPServer implements Runnable{
             serverSocket = new ServerSocket(serverPort);
             serverOn = true;
             fScheduler.execute(new Controller());
-//            new Thread(new Controller()).start();
             System.out.println("Server On!");
         }
         catch(IOException ioe)
@@ -48,10 +44,6 @@ public class TCPServer implements Runnable{
             System.out.println("Could not create server socket. Quitting.");
             System.exit(-1);
         }
-
-//        Calendar now = Calendar.getInstance();
-//        SimpleDateFormat formatter = new SimpleDateFormat("E yyyy.MM.dd 'at' hh:mm:ss a zzz");
-//        System.out.println("It is now : " + formatter.format(now.getTime()));
 
         // Successfully created Server Socket. Now wait for connections.
         while(serverOn)
@@ -62,21 +54,10 @@ public class TCPServer implements Runnable{
                 Socket clientSocket = serverSocket.accept();
                 totalClient++;
                 System.out.printf("Client %d connecting.\n", totalClient);
-                // accept() will block until a client connects to the server.
-                // If execution reaches this point, then it means that a client
-                // socket has been accepted.
-
-                // For each client, we will start a service thread to
-                // service the client requests. This is to demonstrate a
-                // Multi-Threaded server. Starting a thread also lets our
-                // MultiThreadedSocketServer accept multiple connections simultaneously.
-
-                // Start a Service thread
 
                 ClientService cliThread = new ClientService(clientSocket, totalClient);
                 memberList.add(cliThread);
                 fScheduler.execute(cliThread);
-//                new Thread(cliThread).start();
 
             }
             catch(IOException ioe)
@@ -100,28 +81,19 @@ public class TCPServer implements Runnable{
 
     }
 
-    @Override
-    public void run() {
-        setServerOn();
-
-    }
+//    @Override
+//    public void run() {
+//        setServerOn();
+//    }
 
     class ClientService implements Runnable{
 
-         // Obtain the input stream and the output stream for the socket
-         // A good practice is to encapsulate them with a BufferedReader
-         // and a PrintWriter as shown below.
-        BufferedReader in = null;
-        PrintWriter out = null;
-
-        Socket myClientSocket;
-        boolean m_bRunThread = true;
+        private Socket myClientSocket;
+        private boolean m_bRunThread = true;
         private int clientID = 0;
-        //private LinkedList<String> msgQueue = null;
-        List<String> msgList = null;
+        private List<String> msgList = null;
 
         public ClientService(){
-
             super();
         }
 
@@ -132,7 +104,7 @@ public class TCPServer implements Runnable{
 
         }
 
-        public void putInMsg(String msg){
+        public void putMsgInQueue(String msg){
             msgList.add(msg);
         }
 
@@ -140,6 +112,8 @@ public class TCPServer implements Runnable{
 
             // Print out details of this connection 
             System.out.println("Accepted Client Address - " + myClientSocket.getInetAddress().getHostName());
+            BufferedReader in = null;
+            PrintWriter out = null;
 
             try{
 
@@ -150,7 +124,7 @@ public class TCPServer implements Runnable{
 
 
                 String initialMsg = "initialization " + String.valueOf(clientID) + "\n";
-                System.out.println(initialMsg);
+//                System.out.println(initialMsg);
                 out.write(initialMsg);
                 out.flush();
 
@@ -170,18 +144,15 @@ public class TCPServer implements Runnable{
                     }
 
                 }
-            }
-            catch(Exception e){
+
+            }catch(Exception e){
                 e.printStackTrace();
-            }
-            finally{
-                // Clean up 
+            }finally{
                 try{
                     in.close();
                     out.close();
                     myClientSocket.close();
                     fScheduler.shutdown();
-//                    fScheduler.awaitTermination();
                     System.out.println("...Stopped");
                 }
                 catch(IOException ioe){
@@ -190,99 +161,85 @@ public class TCPServer implements Runnable{
             }
         }
 
-
     }
 
-    class Controller implements Runnable{
+    /**
+     * Class Controller
+     *
+     * It is in charge of handling event and managing Treasure.
+     *
+     * **/
+     class Controller implements Runnable{
 
-        ArrayList<Treasure> treasure = null;
-        int currentClient = 0;
-        String target = null;
-        String command = null;
-
+        private ArrayList<Treasure> treasure = null;
 
 
         public Controller(){
-
             treasure = new ArrayList<Treasure>();
             treasure.add(new Treasure("A", 0));
             treasure.add(new Treasure("B", 0));
             treasure.add(new Treasure("C", 0));
-
         }
 
-        private void printTreasureState(){
+        private Treasure findItem(String target){
 
-            Treasure item;
-            for (Object aTreasure : treasure) {
-                item = (Treasure)aTreasure;
-                String msg = item.name + " ";
-                if (item.owner != 0) {
-                    msg += "YES " + item.owner;
-                } else {
-                    msg += "NO " + item.owner;
+            for (Treasure item : treasure) {
+                if (item.getName().equals(target)) {
+                    return item;
                 }
-                System.out.println(msg);
-
             }
-
+            return null;
         }
 
         private void releaseItem(String target, int client){
 
-            Treasure item = null;
+            Treasure item = findItem(target);
 
-            //Find target
-            for (Object aTreasure : treasure) {
-                item = (Treasure)aTreasure;
-                if (item.name.equals(target)) {
-                    break;
-                }
-            }
-
-            //Check if the client own it.
-            if(item.owner == client){
-                item.owner = 0;
-                System.out.println("Client: " + client + "release item " + target);
+            if(item.getOwner() == client){
+                item.setOwner(0);
+//                System.out.println("Client: " + client + "release item " + target);
             }else{
-                System.out.println("Client: " + client + "do not has item " + target);
+//                System.out.println("Client: " + client + "do not has item " + target);
             }
 
         }
 
         private void getItem(String target, int client){
 
-            Treasure item = null;
+            Treasure item = findItem(target);
 
-            //Find target
-            for (Object aTreasure : treasure) {
-                item = (Treasure)aTreasure;
-                if (item.name.equals(target)) {
-                    break;
-                }
-            }
-
-            //Check Target available
-            if(item.owner == 0){
-                item.owner = client;
-                sendMsgToWorker("YES " + target + "\n");
+            if(item.getOwner() == 0){
+                System.out.println("GETITEM: " + target + "  " + client);
+                item.setOwner(client);
+                sendMsgToWorker("YES " + target + "\n", client);
             }else{
-                sendMsgToWorker("NO " + target + "\n");
+                sendMsgToWorker("NO " + target + "\n", client);
             }
 
         }
 
-        private void sendMsgToWorker(String msg){
+        private void sendMsgToWorker(String msg, int Client){
 
-            ClientService client = null;
-
-            for (Object aMember : memberList) {
-                client = (ClientService)aMember;
-                if (client.clientID == currentClient) {
-                    client.putInMsg(msg);
+            for (ClientService worker : memberList) {
+                if (worker.clientID == Client) {
+                    worker.putMsgInQueue(msg);
                 }
             }
 
+        }
+
+        private void printTreasureState(){
+
+            for (Treasure item : treasure) {
+                String msg = item.getName() + " ";
+                if (item.getOwner() != 0) {
+                    msg += "YES " + item.getOwner();
+                } else {
+                    msg += "NO " + item.getOwner();
+                }
+                System.out.println(msg);
+
+            }
         }
 
         @Override
@@ -298,19 +255,17 @@ public class TCPServer implements Runnable{
                     }, 0, 3, TimeUnit.SECONDS
             );
 
-
-
             while(serverOn){
 
                 if(!serverMsgList.isEmpty()){
                     String msg = serverMsgList.remove(0);
                     System.out.println(msg);
 
-                    command = msg.split(" ")[0];
-                    target = msg.split(" ")[1];
-                    currentClient = Integer.parseInt(msg.split(" ")[2]);
+                    String command = msg.split(" ")[0];
+                    String target = msg.split(" ")[1];
+                    int currentClient = Integer.parseInt(msg.split(" ")[2]);
 
-                    System.out.printf("commmand : %s, target: %s, currentClient: %s\n", command, target, currentClient);
+//                    System.out.printf("commmand : %s, target: %s, currentClient: %s\n", command, target, currentClient);
 
                     if(command.equals("GET")){
 
@@ -335,12 +290,16 @@ public class TCPServer implements Runnable{
 
     class Treasure {
 
-        String name = null;
-        int owner = 0;
+        private String name = null;
+        private int owner = 0;
 
         public Treasure(String name, int owner){
             this.name = name;
             this.owner = owner;
+        }
+
+        public String getName(){
+            return name;
         }
 
         public void setOwner(int owner){

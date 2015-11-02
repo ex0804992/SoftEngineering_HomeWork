@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -19,7 +21,7 @@ public final class Client implements Runnable{
     BufferedReader inFromServer;
     Socket clientSocket = null;
     private static ScheduledExecutorService fScheduler = null;
-    private static final int NUM_THREADS = 2;
+    private static final int NUM_THREADS = 1;
 
     private static ArrayList<Item> treasure = null;
     int clientID = 0;
@@ -48,16 +50,12 @@ public final class Client implements Runnable{
 
     private Item findItem(String target){
 
-        Item item = null;
-
-        for (Object aTreasure : treasure) {
-            item = (Item)aTreasure;
+        for (Item item : treasure) {
             if (item.name.equals(target)) {
-                break;
+                return item;
             }
         }
-
-        return item;
+        return null;
     }
 
     private void getTreasure(String target){
@@ -80,12 +78,9 @@ public final class Client implements Runnable{
 
     private void updateItemTimeLeft(){
 
-        Item item;
-
 //        System.out.println("In updateItemTimeLeft: update item!");
 
-        for (Object aTreasure : treasure) {
-            item = (Item)aTreasure;
+        for (Item item : treasure) {
             if (item.timeLeft != 0) {
                 --item.timeLeft;
                 if(item.timeLeft == 0){
@@ -98,11 +93,8 @@ public final class Client implements Runnable{
 
     private void printTreasureState(){
 
-        Item item;
         String msg = "Client " + clientID + "\n";
-        for (Object aTreasure : treasure) {
-            item = (Item)aTreasure;
-
+        for (Item item : treasure) {
             if (item.isOwn()) {
                 msg += item.name + " YES " + item.timeLeft + "\n";
             } else {
@@ -134,12 +126,12 @@ public final class Client implements Runnable{
                     item.setOwn(true);
                     item.setTimeLeft(5);
 
-//                    System.out.println("Client: " + clientID + " Item: " + target + findItem(target).isOwn());
+                    System.out.println("Client: " + clientID + " Item: " + target + findItem(target).isOwn());
 
                 }else if(response.equals("NO")){
 
                     item.setOwn(false);
-//                    System.out.println("Client: " + clientID + " Item: " + target + findItem(target).isOwn());
+                    System.out.println("Client: " + clientID + " Item: " + target + findItem(target).isOwn());
                 }else{
 
                     System.out.println("Invalid Response!!!");
@@ -163,21 +155,22 @@ public final class Client implements Runnable{
 
     class scheduledTask implements Runnable{
 
-        int counter = 0;
-        String target = null;
-        Item currentGetItem = null;
+        private int counter = 0;
+        private String target = null;
+        private Item currentGetItem = null;
 
         @Override
         public void run() {
 
+            updateItemTimeLeft();
+
+            //Get treasure every seconds.
             currentGetItem = treasure.get((counter%3));
             if(!currentGetItem.isOwn()){
                 System.out.println("In scheduledTask: get item!");
                 target = currentGetItem.name;
                 getTreasure(target);
             }
-
-            updateItemTimeLeft();
 
             if((counter % 3) == 0){
                 printTreasureState();
@@ -186,7 +179,6 @@ public final class Client implements Runnable{
             counter++;
         }
     }
-
 
     public static void main(String[] args) throws Exception{
         Client clientA = new Client();
