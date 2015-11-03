@@ -17,7 +17,7 @@ public class TCPServer{
     private static ScheduledExecutorService fScheduler = null;
     private static final int NUM_THREADS = 4;
     private ArrayList<ClientService> memberList = null;
-    private List<String> serverMsgList = null;
+    private List<String> serverMsgQueue = null;
     private ServerSocket serverSocket;
     private int serverPort = 0;
     private boolean serverOn = false;
@@ -26,86 +26,72 @@ public class TCPServer{
     public TCPServer(int serverPort){
         this.serverPort = serverPort;
         memberList = new ArrayList<ClientService>();
-        serverMsgList = Collections.synchronizedList(new LinkedList<String>());
+        serverMsgQueue = Collections.synchronizedList(new LinkedList<String>()); //Wrap linkedlist in synchronizedList to handle race condition.
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
     }
 
-    public void setServerOn(){
+    public void setServerOn() throws Exception{
 
         try
         {
+            //Create server and execute Controller to handle event.
             serverSocket = new ServerSocket(serverPort);
             serverOn = true;
             fScheduler.execute(new Controller());
             System.out.println("Server On!");
-        }
-        catch(IOException ioe)
-        {
-            System.out.println("Could not create server socket. Quitting.");
-            System.exit(-1);
-        }
 
-        // Successfully created Server Socket. Now wait for connections.
-        while(serverOn)
-        {
-            try
-            {
+            //Wait for connections and keep connection in the member list.
+            while(serverOn){
+
                 // Accept incoming connections.
                 Socket clientSocket = serverSocket.accept();
                 totalClient++;
                 System.out.printf("Client %d connecting.\n", totalClient);
 
-                ClientService cliThread = new ClientService(clientSocket, totalClient);
-                memberList.add(cliThread);
-                fScheduler.execute(cliThread);
+                //Create worker thread to keep socket and handle I/O.
+                ClientService clientWorkerService = new ClientService(clientSocket, totalClient);
+                memberList.add(clientWorkerService);
+                fScheduler.execute(clientWorkerService);
 
-            }
-            catch(IOException ioe)
-            {
-                System.out.println("Exception encountered on accept. Ignoring. Stack Trace :");
-                ioe.printStackTrace();
             }
 
         }
-
-        try
+        catch(IOException ioe)
         {
+            System.out.println("Could not create server. Quitting.");
+            System.exit(-1);
+        }finally {
             serverSocket.close();
             System.out.println("Server Stopped");
         }
-        catch(Exception ioe)
-        {
-            System.out.println("Problem stopping server socket");
-            System.exit(-1);
-        }
-
     }
 
-//    @Override
-//    public void run() {
-//        setServerOn();
-//    }
-
+    /**
+    * Inner Class ClientService
+    *
+    * ClientService is the worker thread to keep and monitor connection status, and help handle I/O.
+    *
+    * **/
     class ClientService implements Runnable{
 
         private Socket myClientSocket;
-        private boolean m_bRunThread = true;
+        private boolean workerOn = true;
         private int clientID = 0;
-        private List<String> msgList = null;
+        private List<String> workerMsgQueue = null;
 
         public ClientService(){
             super();
         }
 
         public ClientService(Socket s, int id){
-            msgList = Collections.synchronizedList(new LinkedList<String>());
+            workerMsgQueue = Collections.synchronizedList(new LinkedList<String>());
             clientID = id;
             myClientSocket = s;
 
         }
 
-        public void putMsgInQueue(String msg){
-            msgList.add(msg);
+        public void putMsgInWorkerQueue(String msg){
+            workerMsgQueue.add(msg);
         }
 
         public void run(){
@@ -120,37 +106,37 @@ public class TCPServer{
                 in = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream()));
                 out = new PrintWriter(new OutputStreamWriter(myClientSocket.getOutputStream()));
 
-                // At this point, we can read for input and reply with appropriate output.
-
-
+                //Send initial message to Client and give client id.
                 String initialMsg = "initialization " + String.valueOf(clientID) + "\n";
-//                System.out.println(initialMsg);
                 out.write(initialMsg);
                 out.flush();
 
-                // Run in a loop until m_bRunThread is set to false
-                while(m_bRunThread){
+                // Run in a loop until workerOn is set to false
+                while(workerOn){
 
+                    //Get input from client and put it in server's message queue.
                     if(in.ready()){
+
                         String clientMsg = in.readLine();
-                        clientMsg += " "+String.valueOf(clientID);
-                        serverMsgList.add(clientMsg);
+                        clientMsg += " "+String.valueOf(clientID);  //Add this client's ID , then Controller can tell where the msg sent from.
+                        serverMsgQueue.add(clientMsg);
                     }
 
-                    if(!msgList.isEmpty()){
+                    //If there is something in worker's message queue, then send it to client.
+                    if(!workerMsgQueue.isEmpty()){
 
-                        out.write(msgList.remove(0));
+                        out.write(workerMsgQueue.remove(0));
                         out.flush();
                     }
-
                 }
 
             }catch(Exception e){
                 e.printStackTrace();
             }finally{
                 try{
-                    in.close();
-                    out.close();
+                    workerOn = false;
+                    if(in != null) in.close();
+                    if(out != null) out.close();
                     myClientSocket.close();
                     fScheduler.shutdown();
                     System.out.println("...Stopped");
@@ -164,12 +150,12 @@ public class TCPServer{
     }
 
     /**
-     * Class Controller
-     *
-     * It is in charge of handling event and managing Treasure.
-     *
-     * **/
-     class Controller implements Runnable{
+    * Inner Class Controller
+    *
+    * It is in charge of handling event and managing Treasure.
+    *
+    * **/
+    class Controller implements Runnable{
 
         private ArrayList<Treasure> treasure = null;
 
@@ -197,9 +183,9 @@ public class TCPServer{
 
             if(item.getOwner() == client){
                 item.setOwner(0);
-//                System.out.println("Client: " + client + "release item " + target);
+                System.out.println("Client: " + client + "release item " + target);
             }else{
-//                System.out.println("Client: " + client + "do not has item " + target);
+                System.out.println("Client: " + client + "do not has item " + target);
             }
 
         }
@@ -222,7 +208,7 @@ public class TCPServer{
 
             for (ClientService worker : memberList) {
                 if (worker.clientID == Client) {
-                    worker.putMsgInQueue(msg);
+                    worker.putMsgInWorkerQueue(msg);
                 }
             }
 
@@ -245,7 +231,7 @@ public class TCPServer{
         @Override
         public void run() {
 
-
+            //Every 3 seconds, print out treasure state.
             final ScheduledFuture<?> soundAlarmFuture = fScheduler.scheduleWithFixedDelay(
                     new Runnable() {
                         @Override
@@ -256,16 +242,14 @@ public class TCPServer{
             );
 
             while(serverOn){
-
-                if(!serverMsgList.isEmpty()){
-                    String msg = serverMsgList.remove(0);
+                //If there is something in server's message queue, then handle it.
+                if(!serverMsgQueue.isEmpty()){
+                    String msg = serverMsgQueue.remove(0);
                     System.out.println(msg);
 
                     String command = msg.split(" ")[0];
                     String target = msg.split(" ")[1];
                     int currentClient = Integer.parseInt(msg.split(" ")[2]);
-
-//                    System.out.printf("commmand : %s, target: %s, currentClient: %s\n", command, target, currentClient);
 
                     if(command.equals("GET")){
 
@@ -278,16 +262,18 @@ public class TCPServer{
                     }else{
 
                         System.out.println("Invalid command!!!");
-
                     }
-
                 }
-
             }
-
         }
     }
 
+    /**
+     * Inner Class Treasure
+     *
+     * Server's treasure
+     *
+     * **/
     class Treasure {
 
         private String name = null;
