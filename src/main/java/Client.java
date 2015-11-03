@@ -23,7 +23,7 @@ public final class Client implements Runnable{
     private static ScheduledExecutorService fScheduler = null;
     private static final int NUM_THREADS = 1;
 
-    private static ArrayList<Item> treasure = null;
+    private ArrayList<Item> treasure = null;
     int clientID = 0;
 
     public Client(){
