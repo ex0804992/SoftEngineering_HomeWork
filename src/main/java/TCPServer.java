@@ -38,7 +38,7 @@ public class TCPServer{
             serverSocket = new ServerSocket(serverPort);
             serverOn = true;
             fScheduler.execute(new Controller());
-            System.out.println("Server On!");
+//            System.out.println("Server On!");
 
             //Wait for connections and keep connection in the member list.
             while(serverOn){
@@ -46,7 +46,7 @@ public class TCPServer{
                 // Accept incoming connections.
                 Socket clientSocket = serverSocket.accept();
                 totalClient++;
-                System.out.printf("Client %d connecting.\n", totalClient);
+//                System.out.printf("Client %d connecting.\n", totalClient);
 
                 //Create worker thread to keep socket and handle I/O.
                 ClientService clientWorkerService = new ClientService(clientSocket, totalClient);
@@ -183,9 +183,9 @@ public class TCPServer{
 
             if(item.getOwner() == client){
                 item.setOwner(0);
-                System.out.println("Client: " + client + "release item " + target);
+//                System.out.println("Client: " + client + "release item " + target);
             }else{
-                System.out.println("Client: " + client + "do not has item " + target);
+//                System.out.println("Client: " + client + "do not has item " + target);
             }
 
         }
@@ -195,7 +195,7 @@ public class TCPServer{
             Treasure item = findItem(target);
 
             if(item.getOwner() == 0){
-                System.out.println("GETITEM: " + target + "  " + client);
+//                System.out.println("GETITEM: " + target + "  " + client);
                 item.setOwner(client);
                 sendMsgToWorker("YES " + target + "\n", client);
             }else{

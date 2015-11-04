@@ -61,7 +61,7 @@ public final class Client implements Runnable{
         outToServer.write(msgToServer);
         outToServer.flush();
 
-        System.out.println("Client: " + clientID + " GET " + findItem(target).name);
+//        System.out.println("Client: " + clientID + " GET " + findItem(target).name);
     }
 
     private void releaseTreasure(String target){
@@ -69,7 +69,7 @@ public final class Client implements Runnable{
         String msgToServer = "RELEASE " + target + "\n";
         outToServer.write(msgToServer);
         outToServer.flush();
-        System.out.println("Client: " + clientID + " RELEASE " + findItem(target).name);
+//        System.out.println("Client: " + clientID + " RELEASE " + findItem(target).name);
 
     }
 
@@ -122,12 +122,12 @@ public final class Client implements Runnable{
                     item.setOwn(true);
                     item.setTimeLeft(5);
 
-                    System.out.println("Client: " + clientID + " Item: " + target + item.isOwn());
+//                    System.out.println("Client: " + clientID + " Item: " + target + item.isOwn());
 
                 }else if(response.equals("NO")){
 
                     item.setOwn(false);
-                    System.out.println("Client: " + clientID + " Item: " + target + item.isOwn());
+//                    System.out.println("Client: " + clientID + " Item: " + target + item.isOwn());
                 }else{
 
                     System.out.println("Invalid Response!!!");
@@ -161,6 +161,7 @@ public final class Client implements Runnable{
         private int counter = 0;
         private String target = null;
         private Item currentGettedItem = null;
+        private int itemIndex = 0;
 
         @Override
         public void run() {
@@ -169,8 +170,8 @@ public final class Client implements Runnable{
             updateItemTimeLeft();
 
             //Get treasure every seconds.
-            int itemIndex = counter % 3;
-            currentGettedItem = treasure.get(itemIndex);
+            itemIndex = counter % 3;
+            currentGettedItem = treasure.get(itemIndex);    //Question: if I have current item, then skip it or get next?
             if(!currentGettedItem.isOwn()){
                 target = currentGettedItem.getName();
                 getTreasure(target);
