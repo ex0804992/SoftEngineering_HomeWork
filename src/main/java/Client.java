@@ -162,6 +162,7 @@ public final class Client implements Runnable{
         private String target = null;
         private Item currentGettedItem = null;
         private int itemIndex = 0;
+//        private boolean isOwnFlag = true;
 
         @Override
         public void run() {
@@ -176,6 +177,22 @@ public final class Client implements Runnable{
                 target = currentGettedItem.getName();
                 getTreasure(target);
             }
+
+//            isOwnFlag = true;
+//            int count = 1;
+//            while(isOwnFlag){
+//
+//                currentGettedItem = treasure.get(itemIndex);
+//                if(!currentGettedItem.isOwn()){
+//                    isOwnFlag = false;
+//                    getTreasure(currentGettedItem.getName());
+//                }else if((count/3) >= 1){
+//                    break;
+//                }
+//                itemIndex  = (itemIndex+1) % 3;
+//                count++;
+//            }
+
 
             //Print state every 3 seconds.
             if((counter % 3) == 0){
