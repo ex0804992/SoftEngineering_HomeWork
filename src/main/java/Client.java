@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class Client implements Runnable{
 
-    String serverName = "localhost";
+    String serverIp;
     static final int PORT_NUMBER = 11111;
     BufferedReader inFromUser;
     PrintWriter outToServer;
@@ -23,19 +23,20 @@ public final class Client implements Runnable{
     private ArrayList<Item> treasure = null;
     int clientID = 0;
 
-    public Client(){
-
+    public Client(String ip){
         inFromUser = new BufferedReader(new InputStreamReader(System.in));
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
         treasure = new ArrayList<Item>();   //Initialize treasure list.
         treasure.add(new Item("A"));
         treasure.add(new Item("B"));
         treasure.add(new Item("C"));
+
+        serverIp = ip;
     }
 
-    public void setClientOn() throws Exception{
+    public boolean connectServer(String serverip) throws Exception{
 
-        clientSocket = new Socket(serverName, PORT_NUMBER);
+        clientSocket = new Socket(serverip, PORT_NUMBER);
         outToServer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
@@ -43,6 +44,8 @@ public final class Client implements Runnable{
 
             runClient();
         }
+
+        return false;
     }
 
     private Item findItem(String target){
@@ -141,7 +144,11 @@ public final class Client implements Runnable{
     @Override
     public void run() {
         try {
-            setClientOn();
+            if(!connectServer(serverIp)){
+
+                System.out.printf("Connection fail!!!");
+
+            }
 
         }catch(Exception e){
             System.out.println(e);
@@ -187,11 +194,11 @@ public final class Client implements Runnable{
     }
 
     public static void main(String[] args) throws Exception{
-        Client clientA = new Client();
+        Client clientA = new Client("127.0.0.1");
         Thread clientThreadA = new Thread(clientA);
         clientThreadA.start();
 
-        Client clientB = new Client();
+        Client clientB = new Client("127.0.0.1");
         Thread clientThreadB = new Thread(clientB);
         clientThreadB.start();
 

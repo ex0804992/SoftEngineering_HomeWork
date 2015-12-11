@@ -223,6 +223,7 @@ public class TCPServer{
                 } else {
                     msg += "NO " + item.getOwner();
                 }
+
                 System.out.println(msg);
 
             }
@@ -236,6 +237,7 @@ public class TCPServer{
                     new Runnable() {
                         @Override
                         public void run() {
+                            System.out.println("============================");
                             printTreasureState();
                         }
                     }, 0, 3, TimeUnit.SECONDS
