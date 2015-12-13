@@ -17,20 +17,26 @@ public class TCPServer{
     private static ScheduledExecutorService fScheduler = null;
     private static final int NUM_THREADS = 4;
     private ArrayList<ClientService> memberList = null;
+    private ArrayList<String> clientIPTable = null;
     private List<String> serverMsgQueue = null;
     private ServerSocket serverSocket;
     private int serverPort = 0;
     private boolean serverOn = false;
     private int totalClient = 0;
 
+    private enum MoveCode {
+        TURNEAST, TURNSOUTH, TURNNORTH, TURNWEST, GET
+    }
+
     public TCPServer(int serverPort){
         this.serverPort = serverPort;
-        memberList = new ArrayList<ClientService>();
+        memberList = new ArrayList<ClientService>();    //Collect client's socket
+        clientIPTable = new ArrayList<String>();    //Collect client's IP
         serverMsgQueue = Collections.synchronizedList(new LinkedList<String>()); //Wrap linkedlist in synchronizedList to handle race condition.
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
     }
 
-    public void setServerOn() throws Exception{
+    public void initTCPServer() throws Exception{
 
         try
         {
@@ -46,7 +52,11 @@ public class TCPServer{
                 // Accept incoming connections.
                 Socket clientSocket = serverSocket.accept();
                 totalClient++;
-//                System.out.printf("Client %d connecting.\n", totalClient);
+
+                // Print out and collect IP of this connection
+                String clientIP = clientSocket.getInetAddress().getHostName();
+                System.out.println("Accepted Client Address - " + clientIP);
+                clientIPTable.add(clientIP);
 
                 //Create worker thread to keep socket and handle I/O.
                 ClientService clientWorkerService = new ClientService(clientSocket, totalClient);
@@ -67,6 +77,15 @@ public class TCPServer{
     }
 
     /**
+     * getClientIPTable()
+     *
+     * give client's IP table to be used to broadcast.
+     * **/
+    public ArrayList getClientIPTable(){
+        return clientIPTable;
+    }
+
+    /**
     * Inner Class ClientService
     *
     * ClientService is the worker thread to keep and monitor connection status, and help handle I/O.
@@ -78,10 +97,8 @@ public class TCPServer{
         private boolean workerOn = true;
         private int clientID = 0;
         private List<String> workerMsgQueue = null;
-
-        public ClientService(){
-            super();
-        }
+        private BufferedReader in = null;
+        private PrintWriter out = null;
 
         public ClientService(Socket s, int id){
             workerMsgQueue = Collections.synchronizedList(new LinkedList<String>());
@@ -94,22 +111,21 @@ public class TCPServer{
             workerMsgQueue.add(msg);
         }
 
-        public void run(){
+        private void sendInitialMsg(){
+            //Send initial message to Client and give client id.
+            String initialMsg = "initialization " + String.valueOf(clientID) + "\n";
+            out.write(initialMsg);
+            out.flush();
+        }
 
-            // Print out details of this connection 
-            System.out.println("Accepted Client Address - " + myClientSocket.getInetAddress().getHostName());
-            BufferedReader in = null;
-            PrintWriter out = null;
+        public void run(){
 
             try{
 
                 in = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream()));
                 out = new PrintWriter(new OutputStreamWriter(myClientSocket.getOutputStream()));
 
-                //Send initial message to Client and give client id.
-                String initialMsg = "initialization " + String.valueOf(clientID) + "\n";
-                out.write(initialMsg);
-                out.flush();
+                sendInitialMsg();
 
                 // Run in a loop until workerOn is set to false
                 while(workerOn){
@@ -117,6 +133,7 @@ public class TCPServer{
                     //Get input from client and put it in server's message queue.
                     if(in.ready()){
 
+//get Gson object from client, then decode it before put it in server message queue.
                         String clientMsg = in.readLine();
                         clientMsg += " "+String.valueOf(clientID);  //Add this client's ID , then Controller can tell where the msg sent from.
                         serverMsgQueue.add(clientMsg);
@@ -185,7 +202,7 @@ public class TCPServer{
                 item.setOwner(0);
 //                System.out.println("Client: " + client + "release item " + target);
             }else{
-//                System.out.println("Client: " + client + "do not has item " + target);
+                System.out.println("Client: " + client + "do not has item " + target);
             }
 
         }
@@ -243,6 +260,8 @@ public class TCPServer{
                     }, 0, 3, TimeUnit.SECONDS
             );
 
+
+
             while(serverOn){
                 //If there is something in server's message queue, then handle it.
                 if(!serverMsgQueue.isEmpty()){
@@ -252,6 +271,20 @@ public class TCPServer{
                     String command = msg.split(" ")[0];
                     String target = msg.split(" ")[1];
                     int currentClient = Integer.parseInt(msg.split(" ")[2]);
+
+//                    //According to moveCode, finding which action to do.
+//                    MoveCode moveCode = msg.......;
+//                    switch (moveCode){
+//                        case TURNEAST:
+//
+//                        case TURNNORTH:
+//
+//                        case TURNSOUTH:
+//
+//                        case TURNWEST:
+//
+//                        case GET:
+//                    }
 
                     if(command.equals("GET")){
 

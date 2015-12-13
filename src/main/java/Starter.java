@@ -6,7 +6,7 @@ public class Starter {
 
     public static void main(String[] args) throws Exception{
         TCPServer server = new TCPServer(11111);
-        server.setServerOn();
+        server.initTCPServer();
 //        Thread serverThread = new Thread(server);
 //        serverThread.start();
 

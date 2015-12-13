@@ -23,6 +23,10 @@ public final class Client implements Runnable{
     private ArrayList<Item> treasure = null;
     int clientID = 0;
 
+    private enum MoveCode {
+        TURNEAST, TURNSOUTH, TURNNORTH, TURNWEST, GET
+    }
+
     public Client(String ip){
         inFromUser = new BufferedReader(new InputStreamReader(System.in));
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
@@ -46,6 +50,23 @@ public final class Client implements Runnable{
         }
 
         return false;
+    }
+
+    /**
+     * Class inputMoves
+     *
+     * UIM or DOM call this method to send moveCode to sever.
+     *
+     * **/
+    public void inputMoves(MoveCode moveCode){
+
+        //Wrap moveCode into Gson object
+
+
+
+        //Send it to server
+        //outToServer.write();
+
     }
 
     private Item findItem(String target){
@@ -80,7 +101,7 @@ public final class Client implements Runnable{
 
         for (Item item : treasure) {
             if (item.timeLeft != 0) {
-                --item.timeLeft;
+                item.timeLeft = item.timeLeft - 1;
                 if(item.timeLeft == 0){
                     item.setOwn(false);
                     releaseTreasure(item.name);
