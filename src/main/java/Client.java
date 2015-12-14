@@ -6,11 +6,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public final class Client implements Runnable{
+public class Client implements Runnable{
 
     private String serverIp;
     static final int PORT_NUMBER = 11111;
-    BufferedReader inFromUser;
+    private BufferedReader inFromUser;
     PrintWriter outToServer;
     BufferedReader inFromServer;
     Socket clientSocket = null;
@@ -24,29 +24,17 @@ public final class Client implements Runnable{
         TURNEAST, TURNSOUTH, TURNNORTH, TURNWEST, GET
     }
 
-    public Client(String ip){
+    public Client(){
         inFromUser = new BufferedReader(new InputStreamReader(System.in));
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
         treasure = new ArrayList<Item>();   //Initialize treasure list.
         treasure.add(new Item("A"));
         treasure.add(new Item("B"));
         treasure.add(new Item("C"));
-
-        serverIp = ip;
-        try {
-            if(!connectServer(serverIp)){
-
-                System.out.printf("Connection fail!!!");
-
-            }
-
-        }catch(Exception e){
-            System.out.println(e);
-        }
     }
 
     public boolean connectServer(String serverip) throws Exception{
-
+        this.serverIp = serverip;
         clientSocket = new Socket(serverip, PORT_NUMBER);
         outToServer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -132,7 +120,7 @@ public final class Client implements Runnable{
         System.out.println(msg);
     }
 
-    public void runClient() throws Exception{
+    private void runClient() throws Exception{
 
         //Server will send initialized id to this client.
 //        String initialMsg = inFromServer.readLine();
@@ -140,9 +128,9 @@ public final class Client implements Runnable{
 
         //Start periodic tasks.
 //        final ScheduledFuture<?> alarmFuture = fScheduler.scheduleWithFixedDelay(new ScheduledTask(), 0, 1, TimeUnit.SECONDS);
-        for(MoveCode m : MoveCode.values()) {
-            inputMoves(m.toString());
-        }
+//        for(MoveCode m : MoveCode.values()) {
+//            inputMoves(m.toString());
+//        }
 
 //        while(true){
 //            if (inFromServer.ready()) {
@@ -225,16 +213,16 @@ public final class Client implements Runnable{
         }
     }
 
-    public static void main(String[] args) throws Exception{
-        Client clientA = new Client("127.0.0.1");
-        Thread clientThreadA = new Thread(clientA);
-        clientThreadA.start();
-
-        Client clientB = new Client("127.0.0.1");
-        Thread clientThreadB = new Thread(clientB);
-        clientThreadB.start();
-
-    }
+//    public static void main(String[] args) throws Exception{
+//        Client clientA = new Client("127.0.0.1");
+//        Thread clientThreadA = new Thread(clientA);
+//        clientThreadA.start();
+//
+//        Client clientB = new Client("127.0.0.1");
+//        Thread clientThreadB = new Thread(clientB);
+//        clientThreadB.start();
+//
+//    }
 
     /**
      * Inner Class Item

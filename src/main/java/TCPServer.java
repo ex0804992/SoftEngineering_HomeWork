@@ -120,7 +120,6 @@ public class TCPServer{
 
                 in = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream()));
                 out = new PrintWriter(new OutputStreamWriter(myClientSocket.getOutputStream()));
-
 //                sendInitialMsg();
 
                 // Run in a loop until workerOn is set to false
@@ -128,11 +127,9 @@ public class TCPServer{
 
                     //Get input from client and put it in server's message queue.
                     if(in.ready()){
-
 //get Gson object from client, then decode it before put it in server message queue.
                         //According to moveCode, finding which action to do.
                         String msg = in.readLine();
-                        System.out.println(msg);
                         MoveCode moveCode = MoveCode.valueOf(msg);
                         switch (moveCode){
                             case TURNEAST:
@@ -337,6 +334,11 @@ public class TCPServer{
             return owner;
         }
 
+    }
+
+    public static void main(String[] args) throws Exception {
+        TCPServer server = new TCPServer(11111);
+        server.initTCPServer();
     }
 
 }
