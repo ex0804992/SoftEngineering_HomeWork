@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
@@ -11,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class Client implements Runnable{
 
-    String serverIp;
+    private String serverIp;
     static final int PORT_NUMBER = 11111;
     BufferedReader inFromUser;
     PrintWriter outToServer;
@@ -36,6 +33,16 @@ public final class Client implements Runnable{
         treasure.add(new Item("C"));
 
         serverIp = ip;
+        try {
+            if(!connectServer(serverIp)){
+
+                System.out.printf("Connection fail!!!");
+
+            }
+
+        }catch(Exception e){
+            System.out.println(e);
+        }
     }
 
     public boolean connectServer(String serverip) throws Exception{
@@ -47,9 +54,10 @@ public final class Client implements Runnable{
         if(clientSocket != null) {
 
             runClient();
+            return true;    //If it is here, it means work is finished
         }
 
-        return false;
+        return false;   //It means connection fail.
     }
 
     /**
@@ -58,14 +66,14 @@ public final class Client implements Runnable{
      * UIM or DOM call this method to send moveCode to sever.
      *
      * **/
-    public void inputMoves(MoveCode moveCode){
+    public void inputMoves(String moveCode) throws Exception{
 
         //Wrap moveCode into Gson object
 
-
-
         //Send it to server
-        //outToServer.write();
+//        System.out.println("out to server");
+        outToServer.print(moveCode + "\n");
+        outToServer.flush();
 
     }
 
@@ -127,38 +135,41 @@ public final class Client implements Runnable{
     public void runClient() throws Exception{
 
         //Server will send initialized id to this client.
-        String initialMsg = inFromServer.readLine();
-        clientID = Integer.parseInt(initialMsg.split(" ")[1]);
+//        String initialMsg = inFromServer.readLine();
+//        clientID = Integer.parseInt(initialMsg.split(" ")[1]);
 
         //Start periodic tasks.
-        final ScheduledFuture<?> alarmFuture = fScheduler.scheduleWithFixedDelay(new ScheduledTask(), 0, 1, TimeUnit.SECONDS);
-
-        while(true){
-            if (inFromServer.ready()) {
-                //Read message and divide it to be "target" and "response".
-                String message = inFromServer.readLine();
-                String target = message.split(" ")[1];
-                String response = message.split(" ")[0];
-                Item item = findItem(target);
-
-                if (response.equals("YES")) {
-
-                    item.setOwn(true);
-                    item.setTimeLeft(5);
-
-//                    System.out.println("Client: " + clientID + " Item: " + target + item.isOwn());
-
-                }else if(response.equals("NO")){
-
-                    item.setOwn(false);
-//                    System.out.println("Client: " + clientID + " Item: " + target + item.isOwn());
-                }else{
-
-                    System.out.println("Invalid Response!!!");
-                }
-
-            }
+//        final ScheduledFuture<?> alarmFuture = fScheduler.scheduleWithFixedDelay(new ScheduledTask(), 0, 1, TimeUnit.SECONDS);
+        for(MoveCode m : MoveCode.values()) {
+            inputMoves(m.toString());
         }
+
+//        while(true){
+//            if (inFromServer.ready()) {
+//                //Read message and divide it to be "target" and "response".
+//                String message = inFromServer.readLine();
+//                String target = message.split(" ")[1];
+//                String response = message.split(" ")[0];
+//                Item item = findItem(target);
+//
+//                if (response.equals("YES")) {
+//
+//                    item.setOwn(true);
+//                    item.setTimeLeft(5);
+//
+////                    System.out.println("Client: " + clientID + " Item: " + target + item.isOwn());
+//
+//                }else if(response.equals("NO")){
+//
+//                    item.setOwn(false);
+////                    System.out.println("Client: " + clientID + " Item: " + target + item.isOwn());
+//                }else{
+//
+//                    System.out.println("Invalid Response!!!");
+//                }
+//
+//            }
+//        }
 
     }
 

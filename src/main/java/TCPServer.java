@@ -1,8 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -43,7 +39,7 @@ public class TCPServer{
             //Create server and execute Controller to handle event.
             serverSocket = new ServerSocket(serverPort);
             serverOn = true;
-            fScheduler.execute(new Controller());
+//            fScheduler.execute(new Controller());
 //            System.out.println("Server On!");
 
             //Wait for connections and keep connection in the member list.
@@ -81,7 +77,7 @@ public class TCPServer{
      *
      * give client's IP table to be used to broadcast.
      * **/
-    public ArrayList getClientIPTable(){
+    public ArrayList<String> getClientIPTable(){
         return clientIPTable;
     }
 
@@ -125,7 +121,7 @@ public class TCPServer{
                 in = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream()));
                 out = new PrintWriter(new OutputStreamWriter(myClientSocket.getOutputStream()));
 
-                sendInitialMsg();
+//                sendInitialMsg();
 
                 // Run in a loop until workerOn is set to false
                 while(workerOn){
@@ -134,17 +130,41 @@ public class TCPServer{
                     if(in.ready()){
 
 //get Gson object from client, then decode it before put it in server message queue.
-                        String clientMsg = in.readLine();
-                        clientMsg += " "+String.valueOf(clientID);  //Add this client's ID , then Controller can tell where the msg sent from.
-                        serverMsgQueue.add(clientMsg);
+                        //According to moveCode, finding which action to do.
+                        String msg = in.readLine();
+                        System.out.println(msg);
+                        MoveCode moveCode = MoveCode.valueOf(msg);
+                        switch (moveCode){
+                            case TURNEAST:
+                                System.out.println("TURNEAST");
+                                /**updateDirection();**/
+                            case TURNNORTH:
+                                System.out.println("TURNNORTH");
+                                /**updateDirection();**/
+                                break;
+                            case TURNSOUTH:
+                                System.out.println("TURNSOUTH");
+                                /**updateDirection();**/
+                                break;
+                            case TURNWEST:
+                                System.out.println("TURNWEST");
+                                /**updateDirection();**/
+                                break;
+                            case GET:
+                                System.out.println("GET");
+                                /**getItem();**/
+                                break;
+                        }
+//                        clientMsg += " "+String.valueOf(clientID);  //Add this client's ID , then Controller can tell where the msg sent from.
+//                        serverMsgQueue.add(clientMsg);
                     }
 
-                    //If there is something in worker's message queue, then send it to client.
-                    if(!workerMsgQueue.isEmpty()){
-
-                        out.write(workerMsgQueue.remove(0));
-                        out.flush();
-                    }
+//                    //If there is something in worker's message queue, then send it to client.
+//                    if(!workerMsgQueue.isEmpty()){
+//
+//                        out.write(workerMsgQueue.remove(0));
+//                        out.flush();
+//                    }
                 }
 
             }catch(Exception e){
@@ -271,20 +291,6 @@ public class TCPServer{
                     String command = msg.split(" ")[0];
                     String target = msg.split(" ")[1];
                     int currentClient = Integer.parseInt(msg.split(" ")[2]);
-
-//                    //According to moveCode, finding which action to do.
-//                    MoveCode moveCode = msg.......;
-//                    switch (moveCode){
-//                        case TURNEAST:
-//
-//                        case TURNNORTH:
-//
-//                        case TURNSOUTH:
-//
-//                        case TURNWEST:
-//
-//                        case GET:
-//                    }
 
                     if(command.equals("GET")){
 
