@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 
-public class TCPServer{
+public class TCPServer implements serverOperation{
 
     private static ScheduledExecutorService fScheduler = null;
     private static final int NUM_THREADS = 4;
@@ -19,20 +19,23 @@ public class TCPServer{
     private int serverPort = 0;
     private boolean serverOn = false;
     private int totalClient = 0;
+    CDCOperation cdcOperation;
 
     private enum MoveCode {
         TURNEAST, TURNSOUTH, TURNNORTH, TURNWEST, GET
     }
 
-    public TCPServer(int serverPort){
+    public TCPServer(int serverPort, CDCOperation cdcOperation){
+        this.cdcOperation = cdcOperation;
         this.serverPort = serverPort;
         memberList = new ArrayList<ClientService>();    //Collect client's socket
         clientIPTable = new ArrayList<String>();    //Collect client's IP
-        serverMsgQueue = Collections.synchronizedList(new LinkedList<String>()); //Wrap linkedlist in synchronizedList to handle race condition.
+//        serverMsgQueue = Collections.synchronizedList(new LinkedList<String>()); //Wrap linkedlist in synchronizedList to handle race condition.
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
     }
 
-    public void initTCPServer() throws Exception{
+    @Override
+    public void initTCPServer() throws IOException{
 
         try
         {
@@ -67,17 +70,22 @@ public class TCPServer{
             System.out.println("Could not create server. Quitting.");
             System.exit(-1);
         }finally {
+
+            fScheduler = null;
             serverSocket.close();
             System.out.println("Server Stopped");
         }
     }
+
+
 
     /**
      * getClientIPTable()
      *
      * give client's IP table to be used to broadcast.
      * **/
-    public ArrayList<String> getClientIPTable(){
+    @Override
+    public ArrayList<String> getClientIPTable() {
         return clientIPTable;
     }
 
@@ -133,23 +141,19 @@ public class TCPServer{
                         MoveCode moveCode = MoveCode.valueOf(msg);
                         switch (moveCode){
                             case TURNEAST:
-                                System.out.println("TURNEAST");
-                                /**updateDirection();**/
+                                cdcOperation.updateDirection(0, moveCode.ordinal());
+                                break;
                             case TURNNORTH:
-                                System.out.println("TURNNORTH");
-                                /**updateDirection();**/
+                                cdcOperation.updateDirection(0, moveCode.ordinal());
                                 break;
                             case TURNSOUTH:
-                                System.out.println("TURNSOUTH");
-                                /**updateDirection();**/
+                                cdcOperation.updateDirection(0, moveCode.ordinal());
                                 break;
                             case TURNWEST:
-                                System.out.println("TURNWEST");
-                                /**updateDirection();**/
+                                cdcOperation.updateDirection(0, moveCode.ordinal());
                                 break;
                             case GET:
-                                System.out.println("GET");
-                                /**getItem();**/
+                                cdcOperation.getItem(0);
                                 break;
                         }
 //                        clientMsg += " "+String.valueOf(clientID);  //Add this client's ID , then Controller can tell where the msg sent from.
@@ -336,10 +340,10 @@ public class TCPServer{
 
     }
 
-    public static void main(String[] args) throws Exception {
-        TCPServer server = new TCPServer(11111);
-        server.initTCPServer();
-    }
+//    public static void main(String[] args) throws Exception {
+//        TCPServer server = new TCPServer(11111);
+//        server.initTCPServer();
+//    }
 
 }
 

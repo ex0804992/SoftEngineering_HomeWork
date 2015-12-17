@@ -3,10 +3,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-public class Client implements Runnable{
+public class Client implements Runnable, clientOperation{
 
     private String serverIp;
     static final int PORT_NUMBER = 11111;
@@ -33,28 +31,36 @@ public class Client implements Runnable{
         treasure.add(new Item("C"));
     }
 
-    public boolean connectServer(String serverip) throws Exception{
-        this.serverIp = serverip;
-        clientSocket = new Socket(serverip, PORT_NUMBER);
-        outToServer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-        inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+    @Override
+    public boolean connectServer(String serverip){
+        try {
 
-        if(clientSocket != null) {
 
-            runClient();
-            return true;    //If it is here, it means work is finished
+            this.serverIp = serverip;
+            clientSocket = new Socket(serverip, PORT_NUMBER);
+            outToServer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+            inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+            if(clientSocket.isConnected()) {
+
+                runClient();
+                return true;    //If it is here, it means work is finished
+            }
+
+        }catch(IOException IOE){
+            System.out.println(IOE.toString());
         }
 
         return false;   //It means connection fail.
     }
-
     /**
      * Class inputMoves
      *
      * UIM or DOM call this method to send moveCode to sever.
      *
      * **/
-    public void inputMoves(String moveCode) throws Exception{
+     @Override
+     public void inputMoves(String moveCode) {
 
         //Wrap moveCode into Gson object
 
@@ -120,7 +126,7 @@ public class Client implements Runnable{
         System.out.println(msg);
     }
 
-    private void runClient() throws Exception{
+    private void runClient(){
 
         //Server will send initialized id to this client.
 //        String initialMsg = inFromServer.readLine();
