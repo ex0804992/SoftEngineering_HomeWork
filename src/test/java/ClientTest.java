@@ -1,4 +1,5 @@
-import jdk.nashorn.internal.codegen.RuntimeCallSite;
+import ClientModule.Client;
+import ServerModule.serverOperation;
 import junit.framework.TestCase;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -64,12 +65,12 @@ public class ClientTest extends TestCase {
 
     }
 
-//    @Test(timeout = 1000)
-//    public void testConnectServerTimeout(){
-//
-//        client.connectServer("192.169.25.44");
-//
-//    }
+    @Test(timeout = 1000)
+    public void testConnectServerTimeout(){
+
+        client.connectServer("192.169.25.44");
+
+    }
 
     @Test
     public void testInputMoves() throws Exception{
@@ -87,7 +88,7 @@ public class ClientTest extends TestCase {
 
     }
 
-    class MockTCPServer implements serverOperation{
+    class MockTCPServer implements serverOperation {
         String userRequest = null;
         ServerSocket serverSocket;
         BufferedReader in = null;

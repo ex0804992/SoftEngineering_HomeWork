@@ -1,3 +1,5 @@
+package ClientModule;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -87,7 +89,7 @@ public class Client implements Runnable, clientOperation{
         outToServer.write(msgToServer);
         outToServer.flush();
 
-//        System.out.println("Client: " + clientID + " GET " + findItem(target).name);
+//        System.out.println("ClientModule.Client: " + clientID + " GET " + findItem(target).name);
     }
 
     private void releaseTreasure(String target){
@@ -95,7 +97,7 @@ public class Client implements Runnable, clientOperation{
         String msgToServer = "RELEASE " + target + "\n";
         outToServer.write(msgToServer);
         outToServer.flush();
-//        System.out.println("Client: " + clientID + " RELEASE " + findItem(target).name);
+//        System.out.println("ClientModule.Client: " + clientID + " RELEASE " + findItem(target).name);
 
     }
 
@@ -114,7 +116,7 @@ public class Client implements Runnable, clientOperation{
 
     private void printTreasureState(){
 
-        String msg = "Client " + clientID + "\n";
+        String msg = "ClientModule.Client " + clientID + "\n";
         for (Item item : treasure) {
             if (item.isOwn()) {
                 msg += item.name + " YES " + item.timeLeft + "\n";
@@ -151,12 +153,12 @@ public class Client implements Runnable, clientOperation{
 //                    item.setOwn(true);
 //                    item.setTimeLeft(5);
 //
-////                    System.out.println("Client: " + clientID + " Item: " + target + item.isOwn());
+////                    System.out.println("ClientModule.Client: " + clientID + " Item: " + target + item.isOwn());
 //
 //                }else if(response.equals("NO")){
 //
 //                    item.setOwn(false);
-////                    System.out.println("Client: " + clientID + " Item: " + target + item.isOwn());
+////                    System.out.println("ClientModule.Client: " + clientID + " Item: " + target + item.isOwn());
 //                }else{
 //
 //                    System.out.println("Invalid Response!!!");
@@ -220,11 +222,11 @@ public class Client implements Runnable, clientOperation{
     }
 
 //    public static void main(String[] args) throws Exception{
-//        Client clientA = new Client("127.0.0.1");
+//        ClientModule.Client clientA = new ClientModule.Client("127.0.0.1");
 //        Thread clientThreadA = new Thread(clientA);
 //        clientThreadA.start();
 //
-//        Client clientB = new Client("127.0.0.1");
+//        ClientModule.Client clientB = new ClientModule.Client("127.0.0.1");
 //        Thread clientThreadB = new Thread(clientB);
 //        clientThreadB.start();
 //
@@ -233,7 +235,7 @@ public class Client implements Runnable, clientOperation{
     /**
      * Inner Class Item
      *
-     * Client's item
+     * ClientModule.Client's item
      *
      * **/
     class Item {
