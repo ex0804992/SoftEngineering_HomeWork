@@ -1,6 +1,7 @@
 package ClientModule;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
@@ -8,7 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class Client implements Runnable, clientOperation{
 
-    private String serverIp;
+    private InetAddress serverIp;
     static final int PORT_NUMBER = 11111;
     private BufferedReader inFromUser;
     PrintWriter outToServer;
@@ -34,12 +35,12 @@ public class Client implements Runnable, clientOperation{
     }
 
     @Override
-    public boolean connectServer(String serverip){
+    public boolean connectServer(InetAddress serverip) {
         try {
 
 
             this.serverIp = serverip;
-            clientSocket = new Socket(serverip, PORT_NUMBER);
+            clientSocket = new Socket(serverip.getHostAddress() , PORT_NUMBER);
             outToServer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
             inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
@@ -128,7 +129,7 @@ public class Client implements Runnable, clientOperation{
         System.out.println(msg);
     }
 
-    private void runClient(){
+    private void runClient() throws IOException{
 
         //Server will send initialized id to this client.
 //        String initialMsg = inFromServer.readLine();
@@ -136,13 +137,11 @@ public class Client implements Runnable, clientOperation{
 
         //Start periodic tasks.
 //        final ScheduledFuture<?> alarmFuture = fScheduler.scheduleWithFixedDelay(new ScheduledTask(), 0, 1, TimeUnit.SECONDS);
-//        for(MoveCode m : MoveCode.values()) {
-//            inputMoves(m.toString());
-//        }
 
+        /**Receive data from server**/
 //        while(true){
 //            if (inFromServer.ready()) {
-//                //Read message and divide it to be "target" and "response".
+                //Read message and divide it to be "target" and "response".
 //                String message = inFromServer.readLine();
 //                String target = message.split(" ")[1];
 //                String response = message.split(" ")[0];
@@ -163,7 +162,6 @@ public class Client implements Runnable, clientOperation{
 //
 //                    System.out.println("Invalid Response!!!");
 //                }
-//
 //            }
 //        }
 

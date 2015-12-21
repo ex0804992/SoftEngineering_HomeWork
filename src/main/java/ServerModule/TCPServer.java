@@ -4,9 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 
 public class TCPServer implements serverOperation{
@@ -17,7 +15,6 @@ public class TCPServer implements serverOperation{
     private ArrayList<String> clientIPTable = null;
     private List<String> serverMsgQueue = null;
     private ServerSocket serverSocket;
-//    private int serverPort = 0;
     private boolean serverOn = false;
     private int totalClient = 0;
     CDCOperation cdcOperation;
@@ -26,16 +23,26 @@ public class TCPServer implements serverOperation{
         TURNEAST, TURNSOUTH, TURNNORTH, TURNWEST, GET
     }
 
+    /**
+     * TCPServer constructor
+     *
+     * @param cdcOperation  The interface of CDC
+     * **/
     public TCPServer(CDCOperation cdcOperation) throws Exception{
         this.cdcOperation = cdcOperation;
-//        this.serverPort = serverPort;
         memberList = new ArrayList<ClientService>();    //Collect client's socket
         clientIPTable = new ArrayList<String>();    //Collect client's IP
-//        serverMsgQueue = Collections.synchronizedList(new LinkedList<String>()); //Wrap linkedlist in synchronizedList to handle race condition.
+        serverMsgQueue = Collections.synchronizedList(new LinkedList<String>()); //Wrap linkedlist in synchronizedList to handle race condition.
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
-
+        fScheduler.execute(new Controller());   //start controller
     }
 
+    /**
+     * initTCPServer()
+     *
+     * Initialize server socket and wait for connection.
+     *
+     * **/
     @Override
     public void initTCPServer() throws IOException{
 
@@ -51,6 +58,10 @@ public class TCPServer implements serverOperation{
                 // Accept incoming connections.
                 Socket clientSocket = serverSocket.accept();
                 totalClient++;
+
+                /**
+                 * Initial data of client(id , position and so on...)
+                 * **/
 
                 // Print out and collect IP of this connection
                 String clientIP = clientSocket.getInetAddress().getHostName();
@@ -78,15 +89,21 @@ public class TCPServer implements serverOperation{
 //        }
     }
 
+    /**
+     * stop()
+     *
+     * stop server, client connection and scheduler.
+     *
+     * **/
     public void stop() {
 
         try {
             serverSocket.close();
             fScheduler.shutdown();
-            System.out.println("Server Stopped");
             for(ClientService client : memberList){
                 client.stop();
             }
+            System.out.println("Server Stopped");
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -119,66 +136,73 @@ public class TCPServer implements serverOperation{
         private BufferedReader in = null;
         private PrintWriter out = null;
 
+        /**
+         * ClientService constructor
+         *
+         * @param myClientSocket client's socket
+         * @param id client's id
+         * **/
         public ClientService(Socket myClientSocket, int id) throws Exception{
-            workerMsgQueue = Collections.synchronizedList(new LinkedList<String>());
-            clientID = id;
             in = new BufferedReader(new InputStreamReader(myClientSocket.getInputStream()));
             out = new PrintWriter(new OutputStreamWriter(myClientSocket.getOutputStream()));
+            workerMsgQueue = Collections.synchronizedList(new LinkedList<String>());
+            clientID = id;
         }
 
+        /**
+         * putMsgInWorkerQueue()
+         *
+         * The message sent to remote client must be put in workerMsgQueue
+         *
+         * @param msg The message to be sent.
+         * **/
         public void putMsgInWorkerQueue(String msg){
             workerMsgQueue.add(msg);
         }
 
+        /**
+         * stop()
+         *
+         * stop clientService socket, I/O.
+         * **/
         public void stop() {
 
             try {
-
                 workerOn = false;
                 if (in != null) in.close();
                 if (out != null) out.close();
                 if(myClientSocket != null) myClientSocket.close();
-//                    fScheduler.shutdown();
                 System.out.println("...Stopped");
             }catch (IOException e){
                 e.printStackTrace();
             }
         }
 
+        /**
+         * run()
+         *
+         * Read message, and
+         * **/
         public void run(){
 
             try{
-
-
-//                sendInitialMsg();
 
                 // Run in a loop until workerOn is set to false
                 while(workerOn){
 
                     //Get input from client and put it in server's message queue.
                     if(in.ready()){
-//get Gson object from client, then decode it before put it in server message queue.
+
+/**get Gson object from client, then put it in server message queue.**/
                         //According to moveCode, finding which action to do.
                         String msg = in.readLine();
-                        MoveCode moveCode = MoveCode.valueOf(msg);
-                        switch (moveCode){
-                            case TURNEAST:
-                                cdcOperation.updateDirection(0, moveCode.ordinal());
-                                break;
-                            case TURNNORTH:
-                                cdcOperation.updateDirection(0, moveCode.ordinal());
-                                break;
-                            case TURNSOUTH:
-                                cdcOperation.updateDirection(0, moveCode.ordinal());
-                                break;
-                            case TURNWEST:
-                                cdcOperation.updateDirection(0, moveCode.ordinal());
-                                break;
-                            case GET:
-                                cdcOperation.getItem(0);
-                                break;
-                        }
+                        serverMsgQueue.add(msg);
 
+                    }
+
+                    if(!workerMsgQueue.isEmpty()){
+                        out.print(workerMsgQueue.remove(0));
+                        out.flush();
                     }
 
                 }
@@ -203,89 +227,89 @@ public class TCPServer implements serverOperation{
 
     }
 
-//    /**
-//    * Inner Class Controller
-//    *
-//    * It is in charge of handling event and managing Treasure.
-//    *
-//    * **/
-//    class Controller implements Runnable{
-//
-//        private ArrayList<Treasure> treasure = null;
-//
-//
-//        public Controller(){
+    /**
+    * Inner Class Controller
+    *
+    * It is in charge of handling event and managing Treasure.
+    *
+    * **/
+    public class Controller implements Runnable{
+
+        private ArrayList<Treasure> treasure = null;
+
+
+        public Controller(){
 //            treasure = new ArrayList<Treasure>();
 //            treasure.add(new Treasure("A", 0));
 //            treasure.add(new Treasure("B", 0));
 //            treasure.add(new Treasure("C", 0));
-//        }
-//
-//        private Treasure findItem(String target){
-//
-//            for (Treasure item : treasure) {
-//                if (item.getName().equals(target)) {
-//                    return item;
-//                }
-//            }
-//            return null;
-//        }
-//
-//        private void releaseItem(String target, int client){
-//
-//            Treasure item = findItem(target);
-//
-//            if(item.getOwner() == client){
-//                item.setOwner(0);
-////                System.out.println("ClientModule.Client: " + client + "release item " + target);
-//            }else{
-//                System.out.println("ClientModule.Client: " + client + "do not has item " + target);
-//            }
-//
-//        }
-//
-//        private void getItem(String target, int client){
-//
-//            Treasure item = findItem(target);
-//
-//            if(item.getOwner() == 0){
-////                System.out.println("GETITEM: " + target + "  " + client);
-//                item.setOwner(client);
-//                sendMsgToWorker("YES " + target + "\n", client);
-//            }else{
-//                sendMsgToWorker("NO " + target + "\n", client);
-//            }
-//
-//        }
-//
-//        private void sendMsgToWorker(String msg, int ClientModule.Client){
-//
-//            for (ClientService worker : memberList) {
-//                if (worker.clientID == ClientModule.Client) {
-//                    worker.putMsgInWorkerQueue(msg);
-//                }
-//            }
-//
-//        }
-//
-//        private void printTreasureState(){
-//
-//            for (Treasure item : treasure) {
-//                String msg = item.getName() + " ";
-//                if (item.getOwner() != 0) {
-//                    msg += "YES " + item.getOwner();
-//                } else {
-//                    msg += "NO " + item.getOwner();
-//                }
-//
-//                System.out.println(msg);
-//
-//            }
-//        }
-//
-//        @Override
-//        public void run() {
-//
+        }
+
+        private Treasure findItem(String target){
+
+            for (Treasure item : treasure) {
+                if (item.getName().equals(target)) {
+                    return item;
+                }
+            }
+            return null;
+        }
+
+        private void releaseItem(String target, int client){
+
+            Treasure item = findItem(target);
+
+            if(item.getOwner() == client){
+                item.setOwner(0);
+//                System.out.println("ClientModule.Client: " + client + "release item " + target);
+            }else{
+                System.out.println("ClientModule.Client: " + client + "do not has item " + target);
+            }
+
+        }
+
+        private void getItem(String target, int client){
+
+            Treasure item = findItem(target);
+
+            if(item.getOwner() == 0){
+//                System.out.println("GETITEM: " + target + "  " + client);
+                item.setOwner(client);
+                sendMsgToWorker("YES " + target + "\n", client);
+            }else{
+                sendMsgToWorker("NO " + target + "\n", client);
+            }
+
+        }
+
+        private void sendMsgToWorker(String msg, int clientID){
+
+            for (ClientService worker : memberList) {
+                if (worker.clientID == clientID) {
+                    worker.putMsgInWorkerQueue(msg);
+                }
+            }
+
+        }
+
+        private void printTreasureState(){
+
+            for (Treasure item : treasure) {
+                String msg = item.getName() + " ";
+                if (item.getOwner() != 0) {
+                    msg += "YES " + item.getOwner();
+                } else {
+                    msg += "NO " + item.getOwner();
+                }
+
+                System.out.println(msg);
+
+            }
+        }
+
+        @Override
+        public void run() {
+
 //            //Every 3 seconds, print out treasure state.
 //            final ScheduledFuture<?> soundAlarmFuture = fScheduler.scheduleWithFixedDelay(
 //                    new Runnable() {
@@ -296,70 +320,76 @@ public class TCPServer implements serverOperation{
 //                        }
 //                    }, 0, 3, TimeUnit.SECONDS
 //            );
-//
-//
-//
-//            while(serverOn){
-//                //If there is something in server's message queue, then handle it.
-//                if(!serverMsgQueue.isEmpty()){
-//                    String msg = serverMsgQueue.remove(0);
-//                    System.out.println(msg);
-//
+
+            while(serverOn){
+
+                //If there is something in server's message queue, then handle it.
+                if(!serverMsgQueue.isEmpty()){
+                    String msg = serverMsgQueue.remove(0);
+
 //                    String command = msg.split(" ")[0];
 //                    String target = msg.split(" ")[1];
 //                    int currentClient = Integer.parseInt(msg.split(" ")[2]);
-//
-//                    if(command.equals("GET")){
-//
-//                        getItem(target, currentClient);
-//
-//                    }else if(command.equals("RELEASE")){
-//
-//                        releaseItem(target, currentClient);
-//
-//                    }else{
-//
-//                        System.out.println("Invalid command!!!");
-//                    }
-//                }
-//            }
-//        }
-//    }
+                    MoveCode moveCode = MoveCode.valueOf(msg);
 
-//    /**
-//     * Inner Class Treasure
-//     *
-//     * Server's treasure
-//     *
-//     * **/
-//    class Treasure {
-//
-//        private String name = null;
-//        private int owner = 0;
-//
-//        public Treasure(String name, int owner){
-//            this.name = name;
-//            this.owner = owner;
-//        }
-//
-//        public String getName(){
-//            return name;
-//        }
-//
-//        public void setOwner(int owner){
-//            this.owner=owner;
-//        }
-//
-//        public int getOwner(){
-//            return owner;
-//        }
-//
+                    System.out.println("The command is : " + msg);
+
+                    switch (moveCode){
+                        case TURNEAST:
+                            cdcOperation.updateDirection(0, moveCode.ordinal());
+                            break;
+                        case TURNNORTH:
+                            cdcOperation.updateDirection(0, moveCode.ordinal());
+                            break;
+                        case TURNSOUTH:
+                            cdcOperation.updateDirection(0, moveCode.ordinal());
+                            break;
+                        case TURNWEST:
+                            cdcOperation.updateDirection(0, moveCode.ordinal());
+                            break;
+                        case GET:
+                            cdcOperation.getItem(0);
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Inner Class Treasure
+     *
+     * Server's treasure
+     *
+     * **/
+    class Treasure {
+
+        private String name = null;
+        private int owner = 0;
+
+        public Treasure(String name, int owner){
+            this.name = name;
+            this.owner = owner;
+        }
+
+        public String getName(){
+            return name;
+        }
+
+        public void setOwner(int owner){
+            this.owner=owner;
+        }
+
+        public int getOwner(){
+            return owner;
+        }
+
+    }
+
+//    public static void main(String[] args) throws Exception {
+//        ServerModule.TCPServer server = new ServerModule.TCPServer(11111);
+//        server.initTCPServer();
 //    }
-//
-////    public static void main(String[] args) throws Exception {
-////        ServerModule.TCPServer server = new ServerModule.TCPServer(11111);
-////        server.initTCPServer();
-////    }
 
 }
 

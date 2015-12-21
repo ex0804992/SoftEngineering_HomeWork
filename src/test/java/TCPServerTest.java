@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import org.junit.*;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -104,6 +105,13 @@ public class TCPServerTest extends TestCase {
         mockClient.close();
     }
 
+    @Test
+    public void testController(){
+
+
+
+    }
+
     class MockClient implements clientOperation {
 
         Socket clientSocket;
@@ -136,8 +144,9 @@ public class TCPServerTest extends TestCase {
 
         }
 
+
         @Override
-        public boolean connectServer(String serverip) {
+        public boolean connectServer(InetAddress serverip) {
             return false;
         }
 
