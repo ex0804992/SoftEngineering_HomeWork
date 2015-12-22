@@ -1,5 +1,7 @@
 package ClientModule;
 
+import com.google.gson.*;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -18,7 +20,7 @@ public class Client implements Runnable, clientOperation{
     private static ScheduledExecutorService fScheduler = null;
     private static final int NUM_THREADS = 1;
 
-    private ArrayList<Item> treasure = null;
+    private ArrayList<GameData> treasure = null;
     int clientID = 0;
 
     private enum MoveCode {
@@ -28,10 +30,10 @@ public class Client implements Runnable, clientOperation{
     public Client(){
         inFromUser = new BufferedReader(new InputStreamReader(System.in));
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
-        treasure = new ArrayList<Item>();   //Initialize treasure list.
-        treasure.add(new Item("A"));
-        treasure.add(new Item("B"));
-        treasure.add(new Item("C"));
+        treasure = new ArrayList<GameData>();   //Initialize treasure list.
+        treasure.add(new GameData("A"));
+        treasure.add(new GameData("B"));
+        treasure.add(new GameData("C"));
     }
 
     @Override
@@ -65,69 +67,74 @@ public class Client implements Runnable, clientOperation{
      @Override
      public void inputMoves(String moveCode) {
 
+         GameData data = new GameData(moveCode);
+
         //Wrap moveCode into Gson object
+        Gson gson =  new Gson();
+         String json = gson.toJson(data);
+         System.out.println("show : " + json);
 
         //Send it to server
 //        System.out.println("out to server");
-        outToServer.print(moveCode + "\n");
+        outToServer.print(json + "\n");
         outToServer.flush();
 
     }
 
-    private Item findItem(String target){
-
-        for (Item item : treasure) {
-            if (item.name.equals(target)) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    private void getTreasure(String target){
-
-        String msgToServer = "GET " + target + "\n";
-        outToServer.write(msgToServer);
-        outToServer.flush();
-
-//        System.out.println("ClientModule.Client: " + clientID + " GET " + findItem(target).name);
-    }
-
-    private void releaseTreasure(String target){
-
-        String msgToServer = "RELEASE " + target + "\n";
-        outToServer.write(msgToServer);
-        outToServer.flush();
-//        System.out.println("ClientModule.Client: " + clientID + " RELEASE " + findItem(target).name);
-
-    }
-
-    private void updateItemTimeLeft(){
-
-        for (Item item : treasure) {
-            if (item.timeLeft != 0) {
-                item.timeLeft = item.timeLeft - 1;
-                if(item.timeLeft == 0){
-                    item.setOwn(false);
-                    releaseTreasure(item.name);
-                }
-            }
-        }
-    }
-
-    private void printTreasureState(){
-
-        String msg = "ClientModule.Client " + clientID + "\n";
-        for (Item item : treasure) {
-            if (item.isOwn()) {
-                msg += item.name + " YES " + item.timeLeft + "\n";
-            } else {
-                msg += item.name + " NO" + "\n";
-            }
-        }
-
-        System.out.println(msg);
-    }
+//    private GameData findItem(String target){
+//
+//        for (GameData item : treasure) {
+//            if (item.command.equals(target)) {
+//                return item;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    private void getTreasure(String target){
+//
+//        String msgToServer = "GET " + target + "\n";
+//        outToServer.write(msgToServer);
+//        outToServer.flush();
+//
+////        System.out.println("ClientModule.Client: " + clientID + " GET " + findItem(target).command);
+//    }
+//
+//    private void releaseTreasure(String target){
+//
+//        String msgToServer = "RELEASE " + target + "\n";
+//        outToServer.write(msgToServer);
+//        outToServer.flush();
+////        System.out.println("ClientModule.Client: " + clientID + " RELEASE " + findItem(target).command);
+//
+//    }
+//
+//    private void updateItemTimeLeft(){
+//
+//        for (GameData item : treasure) {
+//            if (item.timeLeft != 0) {
+//                item.timeLeft = item.timeLeft - 1;
+//                if(item.timeLeft == 0){
+//                    item.setOwn(false);
+//                    releaseTreasure(item.command);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void printTreasureState(){
+//
+//        String msg = "ClientModule.Client " + clientID + "\n";
+//        for (GameData item : treasure) {
+//            if (item.isOwn()) {
+//                msg += item.command + " YES " + item.timeLeft + "\n";
+//            } else {
+//                msg += item.command + " NO" + "\n";
+//            }
+//        }
+//
+//        System.out.println(msg);
+//    }
 
     private void runClient() throws IOException{
 
@@ -183,41 +190,41 @@ public class Client implements Runnable, clientOperation{
     }
 
 
-    /**
-     * Inner Class ScheduledTask
-     *
-     * ScheduledTask is in charge of periodic task.
-     *
-     * **/
-    class ScheduledTask implements Runnable{
-
-        private int counter = 0;
-        private String target = null;
-        private Item currentGettedItem = null;
-        private int itemIndex = 0;
-
-        @Override
-        public void run() {
-
-            //Update item's time and release item if its left time is 0.
-            updateItemTimeLeft();
-
-            //Get treasure every seconds.
-            itemIndex = counter % 3;
-            currentGettedItem = treasure.get(itemIndex);    //Question: if I have current item, then skip it or get next?
-            if(!currentGettedItem.isOwn()){
-                target = currentGettedItem.getName();
-                getTreasure(target);
-            }
-
-            //Print state every 3 seconds.
-            if((counter % 3) == 0){
-                printTreasureState();
-            }
-
-            counter++;
-        }
-    }
+//    /**
+//     * Inner Class ScheduledTask
+//     *
+//     * ScheduledTask is in charge of periodic task.
+//     *
+//     * **/
+//    class ScheduledTask implements Runnable{
+//
+//        private int counter = 0;
+//        private String target = null;
+//        private GameData currentGettedItem = null;
+//        private int itemIndex = 0;
+//
+//        @Override
+//        public void run() {
+//
+//            //Update item's time and release item if its left time is 0.
+//            updateItemTimeLeft();
+//
+//            //Get treasure every seconds.
+//            itemIndex = counter % 3;
+//            currentGettedItem = treasure.get(itemIndex);    //Question: if I have current item, then skip it or get next?
+//            if(!currentGettedItem.isOwn()){
+//                target = currentGettedItem.getCommand();
+//                getTreasure(target);
+//            }
+//
+//            //Print state every 3 seconds.
+//            if((counter % 3) == 0){
+//                printTreasureState();
+//            }
+//
+//            counter++;
+//        }
+//    }
 
 //    public static void main(String[] args) throws Exception{
 //        ClientModule.Client clientA = new ClientModule.Client("127.0.0.1");
@@ -231,35 +238,26 @@ public class Client implements Runnable, clientOperation{
 //    }
 
     /**
-     * Inner Class Item
+     * Inner Class GameData
      *
-     * ClientModule.Client's item
+     * GameData will be transformed to json, then passed to remote
      *
      * **/
-    class Item {
+    class GameData {
 
-        String name = null;
-        boolean isOwn = false;
-        int timeLeft = 0;
+        private String command;
 
-        public Item(String name){
-            this.name = name;
+
+        public GameData(String command){
+            this.command = command;
         }
 
-        public String getName(){
-            return name;
+        public String getCommand(){
+            return command;
         }
 
-        public void setTimeLeft(int time){
-            timeLeft = time;
-        }
-
-        public void setOwn(boolean state){
-            this.isOwn = state;
-        }
-
-        public boolean isOwn(){
-            return isOwn;
+        public void setCommand(String command){
+            this.command = command;
         }
 
     }

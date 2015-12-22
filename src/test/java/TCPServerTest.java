@@ -1,6 +1,7 @@
 import ClientModule.clientOperation;
 import ServerModule.CDCOperation;
 import ServerModule.TCPServer;
+import com.google.gson.Gson;
 import junit.framework.TestCase;
 import org.junit.*;
 
@@ -105,12 +106,12 @@ public class TCPServerTest extends TestCase {
         mockClient.close();
     }
 
-    @Test
-    public void testController(){
-
-
-
-    }
+//    @Test
+//    public void testController(){
+//
+//
+//
+//    }
 
     class MockClient implements clientOperation {
 
@@ -152,7 +153,16 @@ public class TCPServerTest extends TestCase {
 
         @Override
         public void inputMoves(String moveCode) {
-            outToServer.print(moveCode + "\n");
+            GameData data = new GameData(moveCode);
+
+            //Wrap moveCode into Gson object
+            Gson gson =  new Gson();
+            String json = gson.toJson(data);
+//            System.out.println("show : " + json);
+
+            //Send it to server
+//        System.out.println("out to server");
+            outToServer.print(json + "\n");
             outToServer.flush();
 
         }
@@ -190,6 +200,31 @@ public class TCPServerTest extends TestCase {
             System.out.println("get something!");
             isGetItem = true;
         }
+    }
+
+    /**
+     * Inner Class GameData
+     *
+     * GameData will be transformed to json, then passed to remote
+     *
+     * **/
+    class GameData {
+
+        private String command;
+
+
+        public GameData(String command){
+            this.command = command;
+        }
+
+        public String getCommand(){
+            return command;
+        }
+
+        public void setCommand(String command){
+            this.command = command;
+        }
+
     }
 
 }

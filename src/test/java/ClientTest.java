@@ -78,8 +78,8 @@ public class ClientTest extends TestCase {
         client.connectServer(InetAddress.getByName("127.0.0.1"));
         client.inputMoves(MoveCode.GET.toString());
 
-//        assertEquals(MoveCode.GET.toString(), mockTCPServer.getUserRequest());
-        System.out.println(mockTCPServer.getUserRequest());
+        assertEquals(MoveCode.GET.toString(), mockTCPServer.getUserRequest());
+//        System.out.println(mockTCPServer.getUserRequest());
 
 
     }

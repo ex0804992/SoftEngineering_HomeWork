@@ -1,5 +1,7 @@
 package ServerModule;
 
+import com.google.gson.Gson;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -98,11 +100,11 @@ public class TCPServer implements serverOperation{
     public void stop() {
 
         try {
-            serverSocket.close();
-            fScheduler.shutdown();
             for(ClientService client : memberList){
                 client.stop();
             }
+            serverSocket.close();
+            fScheduler.shutdown();
             System.out.println("Server Stopped");
         }catch(IOException e){
             e.printStackTrace();
@@ -195,8 +197,11 @@ public class TCPServer implements serverOperation{
 
 /**get Gson object from client, then put it in server message queue.**/
                         //According to moveCode, finding which action to do.
-                        String msg = in.readLine();
-                        serverMsgQueue.add(msg);
+                        String jsonMsg = in.readLine();
+                        Gson gson = new Gson();
+                        GameData data = gson.fromJson(jsonMsg, GameData.class);
+
+                        serverMsgQueue.add(data.getCommand());
 
                     }
 
@@ -382,6 +387,31 @@ public class TCPServer implements serverOperation{
 
         public int getOwner(){
             return owner;
+        }
+
+    }
+
+    /**
+     * Inner Class GameData
+     *
+     * GameData will be transformed to json, then passed to remote
+     *
+     * **/
+    class GameData {
+
+        private String command;
+
+
+        public GameData(String command){
+            this.command = command;
+        }
+
+        public String getCommand(){
+            return command;
+        }
+
+        public void setCommand(String command){
+            this.command = command;
         }
 
     }
