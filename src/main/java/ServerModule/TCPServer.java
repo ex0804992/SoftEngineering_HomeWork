@@ -15,7 +15,7 @@ public class TCPServer implements serverOperation{
     private static final int NUM_THREADS = 4;
     private ArrayList<ClientService> memberList = null;
     private ArrayList<String> clientIPTable = null;
-    private List<String> serverMsgQueue = null;
+    private List<GameData> serverMsgQueue = null;
     private ServerSocket serverSocket;
     private boolean serverOn = false;
     private int totalClient = 0;
@@ -34,7 +34,7 @@ public class TCPServer implements serverOperation{
         this.cdcOperation = cdcOperation;
         memberList = new ArrayList<ClientService>();    //Collect client's socket
         clientIPTable = new ArrayList<String>();    //Collect client's IP
-        serverMsgQueue = Collections.synchronizedList(new LinkedList<String>()); //Wrap linkedlist in synchronizedList to handle race condition.
+        serverMsgQueue = Collections.synchronizedList(new LinkedList<GameData>()); //Wrap linkedlist in synchronizedList to handle race condition.
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
         fScheduler.execute(new Controller());   //start controller
     }
@@ -64,6 +64,7 @@ public class TCPServer implements serverOperation{
                 /**
                  * Initial data of client(id , position and so on...)
                  * **/
+                int clientID = cdcOperation.addCharacter();
 
                 // Print out and collect IP of this connection
                 String clientIP = clientSocket.getInetAddress().getHostName();
@@ -71,7 +72,7 @@ public class TCPServer implements serverOperation{
                 clientIPTable.add(clientIP);
 
                 //Create worker thread to keep socket and handle I/O.
-                ClientService clientWorkerService = new ClientService(clientSocket, totalClient);
+                ClientService clientWorkerService = new ClientService(clientSocket, clientID);
                 memberList.add(clientWorkerService);
                 fScheduler.execute(clientWorkerService);
 
@@ -162,6 +163,14 @@ public class TCPServer implements serverOperation{
             workerMsgQueue.add(msg);
         }
 
+        private void sendInitialData(){
+            Player player = cdcOperation.findPlayer(clientID);
+            String playerData = new Gson().toJson(player);
+            System.out.println(playerData);
+            out.print(playerData + "\n");
+            out.flush();
+        }
+
         /**
          * stop()
          *
@@ -183,11 +192,15 @@ public class TCPServer implements serverOperation{
         /**
          * run()
          *
-         * Read message, and
+         * Read message, and put it in server message queue.
          * **/
         public void run(){
 
             try{
+
+                /**Give initial player data to remote**/
+                sendInitialData();
+
 
                 // Run in a loop until workerOn is set to false
                 while(workerOn){
@@ -198,10 +211,8 @@ public class TCPServer implements serverOperation{
 /**get Gson object from client, then put it in server message queue.**/
                         //According to moveCode, finding which action to do.
                         String jsonMsg = in.readLine();
-                        Gson gson = new Gson();
-                        GameData data = gson.fromJson(jsonMsg, GameData.class);
-
-                        serverMsgQueue.add(data.getCommand());
+                        GameData data = new Gson().fromJson(jsonMsg, GameData.class);
+                        serverMsgQueue.add(data);
 
                     }
 
@@ -330,14 +341,14 @@ public class TCPServer implements serverOperation{
 
                 //If there is something in server's message queue, then handle it.
                 if(!serverMsgQueue.isEmpty()){
-                    String msg = serverMsgQueue.remove(0);
+                    GameData data = serverMsgQueue.remove(0);
 
 //                    String command = msg.split(" ")[0];
 //                    String target = msg.split(" ")[1];
 //                    int currentClient = Integer.parseInt(msg.split(" ")[2]);
-                    MoveCode moveCode = MoveCode.valueOf(msg);
+                    MoveCode moveCode = MoveCode.valueOf(data.getCommand());
 
-                    System.out.println("The command is : " + msg);
+                    System.out.println("The command is : " + data.getCommand());
 
                     switch (moveCode){
                         case TURNEAST:

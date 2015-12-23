@@ -19,6 +19,7 @@ public class Client implements Runnable, clientOperation{
     Socket clientSocket = null;
     private static ScheduledExecutorService fScheduler = null;
     private static final int NUM_THREADS = 1;
+    DOMInterface domOperation;
 
     private ArrayList<GameData> treasure = null;
     int clientID = 0;
@@ -27,13 +28,10 @@ public class Client implements Runnable, clientOperation{
         TURNEAST, TURNSOUTH, TURNNORTH, TURNWEST, GET
     }
 
-    public Client(){
+    public Client(DOMInterface domOperation){
         inFromUser = new BufferedReader(new InputStreamReader(System.in));
         fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
-        treasure = new ArrayList<GameData>();   //Initialize treasure list.
-        treasure.add(new GameData("A"));
-        treasure.add(new GameData("B"));
-        treasure.add(new GameData("C"));
+        this.domOperation = domOperation;   //Initial DOM operation.
     }
 
     @Override
@@ -71,8 +69,8 @@ public class Client implements Runnable, clientOperation{
 
         //Wrap moveCode into Gson object
         Gson gson =  new Gson();
-         String json = gson.toJson(data);
-         System.out.println("show : " + json);
+        String json = gson.toJson(data);
+//        System.out.println("show : " + json);
 
         //Send it to server
 //        System.out.println("out to server");
@@ -138,9 +136,11 @@ public class Client implements Runnable, clientOperation{
 
     private void runClient() throws IOException{
 
-        //Server will send initialized id to this client.
-//        String initialMsg = inFromServer.readLine();
-//        clientID = Integer.parseInt(initialMsg.split(" ")[1]);
+//      Server will send initialized id to this client.
+        String initialMsg = inFromServer.readLine();
+        System.out.println(initialMsg);
+        Player player = new Gson().fromJson(initialMsg, Player.class);
+        domOperation.initMyCharacter(player.getID(), player.getX(), player.getY());
 
         //Start periodic tasks.
 //        final ScheduledFuture<?> alarmFuture = fScheduler.scheduleWithFixedDelay(new ScheduledTask(), 0, 1, TimeUnit.SECONDS);

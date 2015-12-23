@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b783bad4-38c8-42cb-aa2e-0d81dc12dad4" name="Default" comment="Modify some method leave some TODO&#10;&#10;TODO Client's runClient() &#10;TODO Server's data type of transition and what to do when command match&#10;TODO send Json object">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/gson_2_2_4.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/gson_2_5.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" />
-      <change type="DELETED" beforePath="C:\Users\bighead\Desktop\SoftEngineering_HomeWork\build\classes\main\Item.class" afterPath="" />
+    <list default="true" id="b783bad4-38c8-42cb-aa2e-0d81dc12dad4" name="Default" comment="Add Gson lib and Gson code , leave some TODO&#10;&#10;TODO Client's runClient() &#10;TODO Server's data type of transition and what to do when command match">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.1/taskArtifacts/cache.properties.lock" afterPath="$PROJECT_DIR$/.gradle/2.1/taskArtifacts/cache.properties.lock" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.1/taskArtifacts/fileHashes.bin" afterPath="$PROJECT_DIR$/.gradle/2.1/taskArtifacts/fileHashes.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.1/taskArtifacts/fileSnapshots.bin" afterPath="$PROJECT_DIR$/.gradle/2.1/taskArtifacts/fileSnapshots.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.1/taskArtifacts/outputFileStates.bin" afterPath="$PROJECT_DIR$/.gradle/2.1/taskArtifacts/outputFileStates.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.1/taskArtifacts/taskArtifacts.bin" afterPath="$PROJECT_DIR$/.gradle/2.1/taskArtifacts/taskArtifacts.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ClientModule/Client.java" afterPath="$PROJECT_DIR$/src/main/java/ClientModule/Client.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/ClientTest.java" afterPath="$PROJECT_DIR$/src/test/java/ClientTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SoftEngineering_TcpServer.iml" afterPath="$PROJECT_DIR$/SoftEngineering_TcpServer.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ServerModule/TCPServer.java" afterPath="$PROJECT_DIR$/src/main/java/ServerModule/TCPServer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/TCPServerTest.java" afterPath="$PROJECT_DIR$/src/test/java/TCPServerTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gradlew" afterPath="$PROJECT_DIR$/gradlew" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="SoftEngineering_TcpServer.iws" />
@@ -49,37 +40,37 @@
       <file leaf-file-name="TCPServer.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/ServerModule/TCPServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="5683" max-vertical-offset="9218">
-              <caret line="202" column="0" selection-start-line="202" selection-start-column="0" selection-end-line="202" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="4224" max-vertical-offset="9460">
+              <caret line="169" column="38" selection-start-line="169" selection-start-column="38" selection-end-line="169" selection-end-column="38" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#3593#3594#0" expanded="true" />
-                <element signature="e#3629#3630#0" expanded="true" />
-                <element signature="e#4888#4889#0" expanded="true" />
-                <element signature="e#4935#4936#0" expanded="true" />
-                <element signature="e#6467#6489#0" expanded="false" />
-                <element signature="e#11488#11489#0" expanded="true" />
-                <element signature="e#11523#11524#0" expanded="true" />
-                <element signature="e#11565#11566#0" expanded="true" />
-                <element signature="e#11605#11606#0" expanded="true" />
-                <element signature="e#11637#11638#0" expanded="true" />
-                <element signature="e#11673#11674#0" expanded="true" />
-                <element signature="e#11906#11907#0" expanded="true" />
-                <element signature="e#11952#11953#0" expanded="true" />
-                <element signature="e#11989#11990#0" expanded="true" />
-                <element signature="e#12027#12028#0" expanded="true" />
-                <element signature="e#12076#12077#0" expanded="true" />
-                <element signature="e#12122#12123#0" expanded="true" />
+                <element signature="e#3654#3655#0" expanded="true" />
+                <element signature="e#3690#3691#0" expanded="true" />
+                <element signature="e#4949#4950#0" expanded="true" />
+                <element signature="e#4996#4997#0" expanded="true" />
+                <element signature="e#6882#6904#0" expanded="false" />
+                <element signature="e#11934#11935#0" expanded="true" />
+                <element signature="e#11969#11970#0" expanded="true" />
+                <element signature="e#12011#12012#0" expanded="true" />
+                <element signature="e#12051#12052#0" expanded="true" />
+                <element signature="e#12083#12084#0" expanded="true" />
+                <element signature="e#12119#12120#0" expanded="true" />
+                <element signature="e#12352#12353#0" expanded="true" />
+                <element signature="e#12398#12399#0" expanded="true" />
+                <element signature="e#12435#12436#0" expanded="true" />
+                <element signature="e#12473#12474#0" expanded="true" />
+                <element signature="e#12522#12523#0" expanded="true" />
+                <element signature="e#12568#12569#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TCPServerTest.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TCPServerTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/TCPServerTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.42824858" vertical-offset="2745" max-vertical-offset="4686">
-              <caret line="160" column="22" selection-start-line="160" selection-start-column="22" selection-end-line="160" selection-end-column="22" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="354" max-vertical-offset="4686">
+              <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
               <folding>
                 <element signature="e#5234#5235#0" expanded="true" />
                 <element signature="e#5280#5281#0" expanded="true" />
@@ -92,21 +83,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Client.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Client.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/ClientModule/Client.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1293" max-vertical-offset="4554">
-              <caret line="69" column="46" selection-start-line="69" selection-start-column="46" selection-end-line="69" selection-end-column="46" />
+            <state vertical-scroll-proportion="0.32881355" vertical-offset="435" max-vertical-offset="4554">
+              <caret line="33" column="68" selection-start-line="33" selection-start-column="68" selection-end-line="33" selection-end-column="68" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#2421#2468#0" expanded="false" />
+                <element signature="e#2347#2394#0" expanded="false" />
                 <element signature="method#run#0;class#Client#0" expanded="false" />
-                <element signature="e#7420#7421#0" expanded="true" />
-                <element signature="e#7466#7467#0" expanded="true" />
-                <element signature="e#7503#7504#0" expanded="true" />
-                <element signature="e#7541#7542#0" expanded="true" />
-                <element signature="e#7590#7591#0" expanded="true" />
-                <element signature="e#7636#7637#0" expanded="true" />
+                <element signature="e#7472#7473#0" expanded="true" />
+                <element signature="e#7518#7519#0" expanded="true" />
+                <element signature="e#7555#7556#0" expanded="true" />
+                <element signature="e#7593#7594#0" expanded="true" />
+                <element signature="e#7642#7643#0" expanded="true" />
+                <element signature="e#7688#7689#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -385,9 +376,9 @@
         <option value="$PROJECT_DIR$/SoftEngineering_TcpServer.iml" />
         <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/src/test/java/ClientTest.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ClientModule/Client.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ServerModule/TCPServer.java" />
         <option value="$PROJECT_DIR$/src/test/java/TCPServerTest.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ServerModule/TCPServer.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ClientModule/Client.java" />
       </list>
     </option>
   </component>
@@ -1063,7 +1054,7 @@
       <workItem from="1446220190848" duration="59167000" />
       <workItem from="1449808203767" duration="4339000" />
       <workItem from="1449818278414" duration="1120000" />
-      <workItem from="1449820458539" duration="96440000" />
+      <workItem from="1449820458539" duration="99535000" />
     </task>
     <task id="LOCAL-00001" summary="Add new function &#10;&#10;add new function and no side effect to old code.">
       <created>1449998613920</created>
@@ -1113,11 +1104,17 @@
       <option name="project" value="LOCAL" />
       <updated>1450721479902</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Add Gson lib and Gson code , leave some TODO&#10;&#10;TODO Client's runClient() &#10;TODO Server's data type of transition and what to do when command match">
+      <created>1450806156943</created>
+      <option name="number" value="00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1450806156943</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="161066000" />
+    <option name="totallyTimeSpent" value="164161000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1198,7 +1195,8 @@
     <MESSAGE value="Add TestCode&#10;&#10;Add testcode" />
     <MESSAGE value="Modify TestCode&#10;&#10;Modify TestCode and all is pass (but have some warninng and Exception )" />
     <MESSAGE value="Modify some method leave some TODO&#10;&#10;TODO Client's runClient() &#10;TODO Server's data type of transition and what to do when command match&#10;TODO send Json object" />
-    <option name="LAST_COMMIT_MESSAGE" value="Modify some method leave some TODO&#10;&#10;TODO Client's runClient() &#10;TODO Server's data type of transition and what to do when command match&#10;TODO send Json object" />
+    <MESSAGE value="Add Gson lib and Gson code , leave some TODO&#10;&#10;TODO Client's runClient() &#10;TODO Server's data type of transition and what to do when command match" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Gson lib and Gson code , leave some TODO&#10;&#10;TODO Client's runClient() &#10;TODO Server's data type of transition and what to do when command match" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1228,14 +1226,14 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2421#2468#0" expanded="false" />
+            <element signature="e#2347#2394#0" expanded="false" />
             <element signature="method#run#0;class#Client#0" expanded="false" />
-            <element signature="e#7420#7421#0" expanded="true" />
-            <element signature="e#7466#7467#0" expanded="true" />
-            <element signature="e#7503#7504#0" expanded="true" />
-            <element signature="e#7541#7542#0" expanded="true" />
-            <element signature="e#7590#7591#0" expanded="true" />
-            <element signature="e#7636#7637#0" expanded="true" />
+            <element signature="e#7472#7473#0" expanded="true" />
+            <element signature="e#7518#7519#0" expanded="true" />
+            <element signature="e#7555#7556#0" expanded="true" />
+            <element signature="e#7593#7594#0" expanded="true" />
+            <element signature="e#7642#7643#0" expanded="true" />
+            <element signature="e#7688#7689#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1564,34 +1562,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/settings.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="885">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/lib/gson-2.5.jar!/META-INF/MANIFEST.MF">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="885">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/SoftEngineering_TcpServer.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5298165" vertical-offset="0" max-vertical-offset="872">
-          <caret line="21" column="9" selection-start-line="21" selection-start-column="9" selection-end-line="21" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.28139535" vertical-offset="0" max-vertical-offset="860">
-          <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
           <folding />
         </state>
       </provider>
@@ -1626,55 +1600,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ClientModule/Client.java">
+    <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1293" max-vertical-offset="4554">
-          <caret line="69" column="46" selection-start-line="69" selection-start-column="46" selection-end-line="69" selection-end-column="46" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2421#2468#0" expanded="false" />
-            <element signature="method#run#0;class#Client#0" expanded="false" />
-            <element signature="e#7420#7421#0" expanded="true" />
-            <element signature="e#7466#7467#0" expanded="true" />
-            <element signature="e#7503#7504#0" expanded="true" />
-            <element signature="e#7541#7542#0" expanded="true" />
-            <element signature="e#7590#7591#0" expanded="true" />
-            <element signature="e#7636#7637#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.28139535" vertical-offset="0" max-vertical-offset="860">
+          <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ServerModule/TCPServer.java">
+    <entry file="file://$PROJECT_DIR$/settings.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5683" max-vertical-offset="9218">
-          <caret line="202" column="0" selection-start-line="202" selection-start-column="0" selection-end-line="202" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3593#3594#0" expanded="true" />
-            <element signature="e#3629#3630#0" expanded="true" />
-            <element signature="e#4888#4889#0" expanded="true" />
-            <element signature="e#4935#4936#0" expanded="true" />
-            <element signature="e#6467#6489#0" expanded="false" />
-            <element signature="e#11488#11489#0" expanded="true" />
-            <element signature="e#11523#11524#0" expanded="true" />
-            <element signature="e#11565#11566#0" expanded="true" />
-            <element signature="e#11605#11606#0" expanded="true" />
-            <element signature="e#11637#11638#0" expanded="true" />
-            <element signature="e#11673#11674#0" expanded="true" />
-            <element signature="e#11906#11907#0" expanded="true" />
-            <element signature="e#11952#11953#0" expanded="true" />
-            <element signature="e#11989#11990#0" expanded="true" />
-            <element signature="e#12027#12028#0" expanded="true" />
-            <element signature="e#12076#12077#0" expanded="true" />
-            <element signature="e#12122#12123#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="885">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SoftEngineering_TcpServer.iml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5298165" vertical-offset="0" max-vertical-offset="872">
+          <caret line="21" column="9" selection-start-line="21" selection-start-column="9" selection-end-line="21" selection-end-column="9" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/TCPServerTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.42824858" vertical-offset="2745" max-vertical-offset="4686">
-          <caret line="160" column="22" selection-start-line="160" selection-start-column="22" selection-end-line="160" selection-end-column="22" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="354" max-vertical-offset="4686">
+          <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
           <folding>
             <element signature="e#5234#5235#0" expanded="true" />
             <element signature="e#5280#5281#0" expanded="true" />
@@ -1682,6 +1635,51 @@
             <element signature="e#5355#5356#0" expanded="true" />
             <element signature="e#5404#5405#0" expanded="true" />
             <element signature="e#5450#5451#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ServerModule/TCPServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="4224" max-vertical-offset="9460">
+          <caret line="169" column="38" selection-start-line="169" selection-start-column="38" selection-end-line="169" selection-end-column="38" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3654#3655#0" expanded="true" />
+            <element signature="e#3690#3691#0" expanded="true" />
+            <element signature="e#4949#4950#0" expanded="true" />
+            <element signature="e#4996#4997#0" expanded="true" />
+            <element signature="e#6882#6904#0" expanded="false" />
+            <element signature="e#11934#11935#0" expanded="true" />
+            <element signature="e#11969#11970#0" expanded="true" />
+            <element signature="e#12011#12012#0" expanded="true" />
+            <element signature="e#12051#12052#0" expanded="true" />
+            <element signature="e#12083#12084#0" expanded="true" />
+            <element signature="e#12119#12120#0" expanded="true" />
+            <element signature="e#12352#12353#0" expanded="true" />
+            <element signature="e#12398#12399#0" expanded="true" />
+            <element signature="e#12435#12436#0" expanded="true" />
+            <element signature="e#12473#12474#0" expanded="true" />
+            <element signature="e#12522#12523#0" expanded="true" />
+            <element signature="e#12568#12569#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ClientModule/Client.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.32881355" vertical-offset="435" max-vertical-offset="4554">
+          <caret line="33" column="68" selection-start-line="33" selection-start-column="68" selection-end-line="33" selection-end-column="68" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2347#2394#0" expanded="false" />
+            <element signature="method#run#0;class#Client#0" expanded="false" />
+            <element signature="e#7472#7473#0" expanded="true" />
+            <element signature="e#7518#7519#0" expanded="true" />
+            <element signature="e#7555#7556#0" expanded="true" />
+            <element signature="e#7593#7594#0" expanded="true" />
+            <element signature="e#7642#7643#0" expanded="true" />
+            <element signature="e#7688#7689#0" expanded="true" />
           </folding>
         </state>
       </provider>
