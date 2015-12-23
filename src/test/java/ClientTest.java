@@ -1,5 +1,5 @@
-import ClientModule.Client;
-import ServerModule.serverOperation;
+import main.ClientModule.*;
+import main.ServerModule.*;
 import junit.framework.TestCase;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -13,12 +13,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+
 public class ClientTest extends TestCase {
 
     Client client;
     Thread thread;
     static MockTCPServer mockTCPServer;
     static boolean isServerUp = false;
+    DOMOperation domOperation;
 
     private enum MoveCode {
         TURNEAST, TURNSOUTH, TURNNORTH, TURNWEST, GET
@@ -26,7 +28,8 @@ public class ClientTest extends TestCase {
 
     @Before
     public void setUp() throws Exception {
-        client = new Client();
+        domOperation = new DOMOperation();
+//        client = new Client(domOperation);
         if(!isServerUp) {
         thread = new Thread(new Runnable() {
                 @Override

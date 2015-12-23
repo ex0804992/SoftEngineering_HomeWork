@@ -1,4 +1,4 @@
-package ServerModule;
+package main.ServerModule;
 
 import java.io.IOException;
 import java.util.ArrayList;

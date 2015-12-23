@@ -1,6 +1,8 @@
-import ClientModule.clientOperation;
-import ServerModule.CDCOperation;
-import ServerModule.TCPServer;
+import main.CDCModule.CentralizedDataCenterInterface;
+import main.ClientModule.clientOperation;
+import main.ServerModule.*;
+import main.CDCModule.*;
+import main.ServerModule.TCPServer;
 import com.google.gson.Gson;
 import junit.framework.TestCase;
 import org.junit.*;
@@ -168,7 +170,7 @@ public class TCPServerTest extends TestCase {
         }
     }
 
-    class MockCDC implements CDCOperation {
+    class MockCDC implements CentralizedDataCenterInterface {
 
         private boolean isUpdateDirection;
         private boolean isGetItem;
@@ -188,17 +190,27 @@ public class TCPServerTest extends TestCase {
             return isGetItem;
         }
 
-        @Override
+
         public void updateDirection(int clientno, int MoveCode) {
             isUpdateDirection = true;
             System.out.println("update direction!");
 
         }
 
-        @Override
+
         public void getItem(int clientno) {
             System.out.println("get something!");
             isGetItem = true;
+        }
+
+        @Override
+        public Player addPlayer() {
+            return null;
+        }
+
+        @Override
+        public Player findPlayer(int clientno) {
+            return null;
         }
     }
 

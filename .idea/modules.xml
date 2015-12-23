@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/SoftEngineering_HomeWork.iml" filepath="$PROJECT_DIR$/SoftEngineering_HomeWork.iml" />
       <module fileurl="file://$PROJECT_DIR$/SoftEngineering_TcpServer.iml" filepath="$PROJECT_DIR$/SoftEngineering_TcpServer.iml" />
     </modules>
   </component>

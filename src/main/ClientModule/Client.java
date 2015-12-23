@@ -1,7 +1,8 @@
-package ClientModule;
+package main.ClientModule;
 
 import com.google.gson.*;
-
+import main.CDCModule.*;
+import main.dom.*;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -79,68 +80,13 @@ public class Client implements Runnable, clientOperation{
 
     }
 
-//    private GameData findItem(String target){
-//
-//        for (GameData item : treasure) {
-//            if (item.command.equals(target)) {
-//                return item;
-//            }
-//        }
-//        return null;
-//    }
-//
-//    private void getTreasure(String target){
-//
-//        String msgToServer = "GET " + target + "\n";
-//        outToServer.write(msgToServer);
-//        outToServer.flush();
-//
-////        System.out.println("ClientModule.Client: " + clientID + " GET " + findItem(target).command);
-//    }
-//
-//    private void releaseTreasure(String target){
-//
-//        String msgToServer = "RELEASE " + target + "\n";
-//        outToServer.write(msgToServer);
-//        outToServer.flush();
-////        System.out.println("ClientModule.Client: " + clientID + " RELEASE " + findItem(target).command);
-//
-//    }
-//
-//    private void updateItemTimeLeft(){
-//
-//        for (GameData item : treasure) {
-//            if (item.timeLeft != 0) {
-//                item.timeLeft = item.timeLeft - 1;
-//                if(item.timeLeft == 0){
-//                    item.setOwn(false);
-//                    releaseTreasure(item.command);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void printTreasureState(){
-//
-//        String msg = "ClientModule.Client " + clientID + "\n";
-//        for (GameData item : treasure) {
-//            if (item.isOwn()) {
-//                msg += item.command + " YES " + item.timeLeft + "\n";
-//            } else {
-//                msg += item.command + " NO" + "\n";
-//            }
-//        }
-//
-//        System.out.println(msg);
-//    }
-
     private void runClient() throws IOException{
 
 //      Server will send initialized id to this client.
         String initialMsg = inFromServer.readLine();
         System.out.println(initialMsg);
         Player player = new Gson().fromJson(initialMsg, Player.class);
-        domOperation.initMyCharacter(player.getID(), player.getX(), player.getY());
+        domOperation.initMyCharacter(player.getClientno(), player.getX(), player.getY());
 
         //Start periodic tasks.
 //        final ScheduledFuture<?> alarmFuture = fScheduler.scheduleWithFixedDelay(new ScheduledTask(), 0, 1, TimeUnit.SECONDS);
@@ -159,12 +105,12 @@ public class Client implements Runnable, clientOperation{
 //                    item.setOwn(true);
 //                    item.setTimeLeft(5);
 //
-////                    System.out.println("ClientModule.Client: " + clientID + " Item: " + target + item.isOwn());
+////                    System.out.println("main.ClientModule.Client: " + clientID + " Item: " + target + item.isOwn());
 //
 //                }else if(response.equals("NO")){
 //
 //                    item.setOwn(false);
-////                    System.out.println("ClientModule.Client: " + clientID + " Item: " + target + item.isOwn());
+////                    System.out.println("main.ClientModule.Client: " + clientID + " Item: " + target + item.isOwn());
 //                }else{
 //
 //                    System.out.println("Invalid Response!!!");
@@ -188,54 +134,6 @@ public class Client implements Runnable, clientOperation{
         }
 
     }
-
-
-//    /**
-//     * Inner Class ScheduledTask
-//     *
-//     * ScheduledTask is in charge of periodic task.
-//     *
-//     * **/
-//    class ScheduledTask implements Runnable{
-//
-//        private int counter = 0;
-//        private String target = null;
-//        private GameData currentGettedItem = null;
-//        private int itemIndex = 0;
-//
-//        @Override
-//        public void run() {
-//
-//            //Update item's time and release item if its left time is 0.
-//            updateItemTimeLeft();
-//
-//            //Get treasure every seconds.
-//            itemIndex = counter % 3;
-//            currentGettedItem = treasure.get(itemIndex);    //Question: if I have current item, then skip it or get next?
-//            if(!currentGettedItem.isOwn()){
-//                target = currentGettedItem.getCommand();
-//                getTreasure(target);
-//            }
-//
-//            //Print state every 3 seconds.
-//            if((counter % 3) == 0){
-//                printTreasureState();
-//            }
-//
-//            counter++;
-//        }
-//    }
-
-//    public static void main(String[] args) throws Exception{
-//        ClientModule.Client clientA = new ClientModule.Client("127.0.0.1");
-//        Thread clientThreadA = new Thread(clientA);
-//        clientThreadA.start();
-//
-//        ClientModule.Client clientB = new ClientModule.Client("127.0.0.1");
-//        Thread clientThreadB = new Thread(clientB);
-//        clientThreadB.start();
-//
-//    }
 
     /**
      * Inner Class GameData

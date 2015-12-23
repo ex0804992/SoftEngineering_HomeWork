@@ -1,4 +1,4 @@
-package ClientModule;
+package main.ClientModule;
 
 import java.net.InetAddress;
 
